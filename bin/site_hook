@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'site_hook'
+
+def start
+  SiteHook::Webhook.run!
+end
+start
