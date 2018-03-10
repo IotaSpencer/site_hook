@@ -41,7 +41,7 @@ module SiteHook
         status 200
         headers 'Content-Type' => 'application/json'
         body {
-          json "{\"message\": \"success\"}"
+          {"message": "success"}.to_json
         }
       else
         halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret'}.to_json
