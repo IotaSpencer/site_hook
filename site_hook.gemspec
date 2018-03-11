@@ -9,18 +9,14 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Ken Spencer"]
   spec.email         = ["me@iotaspencer.me"]
 
-  spec.summary       = %q{TODO: Write a short summary, because RubyGems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Catch a github webhook and execute a plugin}
+  spec.homepage      = 'https://iotaspencer.me/projects/site_hook/'
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against " \
-      "public gem pushes."
+    spec.metadata["source_uri"] = 'https://github.com/IotaSpencer/site_hook'
   end
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
@@ -33,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'sinatra-contrib', '~> 2.0'
   spec.add_runtime_dependency 'thor', '~> 0.20'
   spec.add_runtime_dependency 'paint', '~> 2.0'
+  spec.add_runtime_dependency 'git', '~> 1.3'
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
