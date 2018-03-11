@@ -28,10 +28,10 @@ module SiteHook
     post '/webhook/:hook_name' do
       request.body.rewind
       req_body = request.body.read
-      sig      = request.env['HTTP_X_HUB_SIGNATURE']
+      sig      = request.env['HTTP_X_HUB_SIGNATURE'].sub!(/^sha1=/, '')
       projects = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))['projects']
       begin
-      project  = projects.fetch(params[:hook_name])
+        project = projects.fetch(params[:hook_name])
       rescue KeyError => e
         halt 404, {'Content-Type' => 'application/json'}, {message: 'no such project', status: 1}.to_json
       end
