@@ -18,7 +18,7 @@ module SiteHook
             stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
           rescue Errno::ENOENT
             Jekyll.instance_variable_get('@log').log.error('Jekyll not installed! Gem and Webhook will not function')
-            raise
+            Process.kill('INT', $!.to_i)
           end
         end
 
