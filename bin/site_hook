@@ -3,7 +3,6 @@ require 'thor'
 require 'site_hook'
 
 class CLI < Thor
-
   map %w[--version -v] => :__print_version
   desc '--version, -v', 'Print the version'
 
@@ -12,11 +11,12 @@ class CLI < Thor
   def __print_version
     puts SiteHook::VERSION
   end
+
   begin
     log_level = YAML.load_file(Pathname(Dir.home).join('.jph-rc')).fetch('log_levels')
     default = {
-        hook:  'info',
-        build: 'info'
+      hook: 'info',
+      build: 'info',
     }
     if log_level
       method_option(:log_levels, type: :hash, banner: 'LEVELS', default: default, enum: %w(unknown fatal error warn info debug))
@@ -27,11 +27,12 @@ class CLI < Thor
     method_option(:log_levels, type: :string, banner: 'LEVELS', default: default, enum: %w(unknown fatal error warn info debug))
   end
   desc 'run', 'Start SiteHook'
+
   def run
     webhook = SiteHook::Webhook.new
     webhook.settings['logger'] = {}
     webhook.settings['logger']['hook'] = SiteHook::HookLogger.new(options[:log_levels])
-    webhook.settings['logger']['build'] = SiteHook::HookLogger::Build.new(options[:log_level])}
+    webhook.settings['logger']['build'] = SiteHook::HookLogger::Build.new(options[:log_level])
     SiteHook::Webhook.run!
   end
 
