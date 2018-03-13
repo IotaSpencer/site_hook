@@ -26,9 +26,10 @@ class CLI < Thor
   rescue Errno::ENOENT
     method_option(:log_levels, type: :string, banner: 'LEVELS', default: default, enum: %w(unknown fatal error warn info debug))
   end
-  desc 'run', 'Start SiteHook'
 
-  def run
+  desc 'start', 'Start SiteHook'
+
+  def start
     webhook = SiteHook::Webhook.new
     webhook.settings['logger'] = {}
     SiteHook.mklogdir
@@ -38,7 +39,6 @@ class CLI < Thor
   end
 
   desc 'start', 'Start SiteHook'
-  alias_method(:start, :run)
 end
 
 CLI.start
