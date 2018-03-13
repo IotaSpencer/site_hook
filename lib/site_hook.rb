@@ -21,7 +21,8 @@ module SiteHook
     set port: 9090
     set bind: '127.0.0.1'
     set server: %w(thin)
-    enable :raise_errors
+    set quiet: true
+    set raise_errors: true
 
     def Webhook.verified?(body, hub_sig, secret)
       if hub_sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
