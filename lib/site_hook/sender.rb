@@ -4,18 +4,16 @@ require 'site_hook/logger'
 module SiteHook
   module Senders
     class Jekyll
+      attr :jekyll_source, :build_dest
+
       class Build
-        attr :jekyll_source, :build_dest
 
         # @param [String,Pathname] jekyll_source Path
         # @param [String,Pathname] build_dest path
-        def initialize(jekyll_source, build_dest, logger:)
-          @jekyll_source = jekyll_source
-          @build_dest = build_dest
-          @log = logger
-        end
+        #        def initialize(jekyll_source, build_dest, logger:)
+        #        end
 
-        def grab_jekyll_version
+        def do_grab_version
           begin
             stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
           rescue Errno::ENOENT
@@ -23,14 +21,18 @@ module SiteHook
           end
         end
 
-        def build
+        def do_build
           stdout_str, stderr_str, status = Open3.capture3("jekyll build --source #{@jekyll_source} --destination #{Pathname(@build_dest).to_path}")
         end
       end
 
-      def self.build
+      def self.build(jekyll_source, build_dest, logger:)
+        @jekyll_source = jekyll_source
+        @build_dest = build_dest
+        @log = logger
         instance = self.Build.new
-        #instance.
+        meths = instance.methods.select { |x| x =~ /^do_/ }
+        puts meths
       end
     end
   end
