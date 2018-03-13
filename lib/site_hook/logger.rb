@@ -20,11 +20,11 @@ module SiteHook
     attr :log
     attr :log_level
 
-    def initialize(log_level = nil)
+    def initialize(log_level = 'info')
       @log = Logging.logger[SiteHook.safe_log_name(self)]
       @log.level = log_level
       Logging.appenders.rolling_file(
-        Pathname(Dir.home).join('.jph', 'logs', "#{self.class.name.split('::').last.underscore}-#{@log.level}.log").to_path,
+        Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{log_level}.log").to_path,
         :age => 'daily',
       )
     end
@@ -46,7 +46,7 @@ module SiteHook
         @log = Logging.logger[SiteHook.safe_log_name(self)]
         @log.level = log_level
         Logging.appenders.rolling_file(
-          Pathname(Dir.home).join('.jph', 'logs', "#{self.class.to_s.gsub(/::/, '').downcase}-#{@log.level}.log").to_path,
+          Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{log_level}.log").to_path,
           :age => 'daily',
         )
         LL.log.debug "Initialized #{SiteHook.safe_log_name(self)}"

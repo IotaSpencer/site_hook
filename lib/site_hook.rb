@@ -44,6 +44,7 @@ module SiteHook
         halt 404, {'Content-Type' => 'application/json'}, {message: 'no such project', status: 1}.to_json
       end
       if Webhook.verified?(req_body.to_s, sig, project['hookpass'])
+        BuildLog.log.debug 'Attempting to build...'
         jekyllbuild = SiteHook::Senders::JekyllBuild.new(project['src'], project['dst'], logger: BuildLog)
         status 200
         headers 'Content-Type' => 'application/json'
