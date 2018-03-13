@@ -26,6 +26,7 @@ module SiteHook
     end
   end
 
+  mklogdir
   @@ll = LogLogger.new
   @@ll.debug "#{@@ll.class} initialized."
 
