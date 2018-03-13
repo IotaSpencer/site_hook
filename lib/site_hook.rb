@@ -7,6 +7,8 @@ require 'yaml'
 
 module SiteHook
   class Webhook < Sinatra::Base
+    HookLog = SiteHook::HookLogger::Hook.new(options[:log_levels])
+    BuildLog = SiteHook::HookLogger::Build.new(options[:log_level])
     set port: 9090
     set bind: '0.0.0.0'
 
@@ -24,7 +26,7 @@ module SiteHook
     post '/webhook/:hook_name' do
       request.body.rewind
       req_body = request.body.read
-      sig      = request.env['HTTP_X_HUB_SIGNATURE'].sub!(/^sha1=/, '')
+      sig = request.env['HTTP_X_HUB_SIGNATURE'].sub!(/^sha1=/, '')
       jph_rc = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
       projects = jph_rc['projects']
       begin
