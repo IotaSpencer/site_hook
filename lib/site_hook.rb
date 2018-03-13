@@ -1,16 +1,25 @@
 require 'site_hook/version'
 require 'site_hook/sender'
 require 'site_hook/logger'
+require 'site_hook/cli'
 require 'sinatra'
 require 'sinatra/json'
 require 'yaml'
 
 module SiteHook
+  #  class << self
+  #    attr_accessor :opts
+  #  end
+  module_function
+
+  def options; @opts end
+  def options=(v); @opts = v end
+
   class Webhook < Sinatra::Base
-    HookLog = SiteHook::HookLogger::Hook.new(options[:log_levels])
-    BuildLog = SiteHook::HookLogger::Build.new(options[:log_level])
+    HookLog = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook'])
+    BuildLog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build'])
     set port: 9090
-    set bind: '0.0.0.0'
+    set bind: '127.0.0.1'
 
     def Webhook.verified?(body, hub_sig, secret)
       if hub_sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)

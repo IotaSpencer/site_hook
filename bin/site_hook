@@ -1,40 +1,6 @@
 #!/usr/bin/env ruby
 require 'thor'
 require 'site_hook'
-
-class CLI < Thor
-  map %w[--version -v] => :__print_version
-  desc '--version, -v', 'Print the version'
-
-  # Prints version string
-  # @return [NilClass] nil
-  def __print_version
-    puts SiteHook::VERSION
-  end
-
-  begin
-    log_level = YAML.load_file(Pathname(Dir.home).join('.jph-rc')).fetch('log_levels')
-    default = {
-      hook: 'info',
-      build: 'info',
-    }
-    if log_level
-      method_option(:log_levels, type: :hash, banner: 'LEVELS', default: default, enum: %w(unknown fatal error warn info debug))
-    end
-  rescue KeyError
-    method_option(:log_levels, type: :string, banner: 'LEVELS', default: default, enum: %w(unknown fatal error warn info debug))
-  rescue Errno::ENOENT
-    method_option(:log_levels, type: :string, banner: 'LEVELS', default: default, enum: %w(unknown fatal error warn info debug))
-  end
-
-  desc 'start', 'Start SiteHook'
-
-  def start
-    webhook = SiteHook::Webhook.new
-    SiteHook.mklogdir
-
-    SiteHook::Webhook.run!
-  end
-end
-
-CLI.start
+shook = SiteHook::CLI.new(ARGV)
+shook.invoke('start')
+#SiteHook::CLI.start
