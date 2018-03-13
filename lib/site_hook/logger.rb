@@ -28,7 +28,7 @@ module SiteHook
 
   mklogdir
   @@ll = LogLogger.new
-  @@ll.debug "#{@@ll.class} initialized."
+  @@ll.log.debug "#{@@ll.class} initialized."
 
   class HookLogger
     Logging.logger.root.appenders = Logging.appenders.stdout
@@ -38,7 +38,7 @@ module SiteHook
       attr :log_level
 
       def initialize(log_level = nil)
-        @@ll.debug "Initializing #{self}"
+        @@ll.log.debug "Initializing #{self}"
         @log = Logging.logger[self.class.to_s]
         @log.level = log_level
         Logging.appenders.rolling_file(
@@ -46,7 +46,7 @@ module SiteHook
           :age => 'daily',
           :layout => Logging.layouts.pattern(color_scheme: 'default'),
         )
-        @@ll.debug "Initialized #{self}"
+        @@ll.log.debug "Initialized #{self}"
       end
     end
 
@@ -54,7 +54,7 @@ module SiteHook
       attr :log
 
       def initialize(log_level = nil)
-        @@ll.debug "Initializing #{self}"
+        @@ll.log.debug "Initializing #{self}"
         @log = Logging.logger[self.class.to_s]
         @log.level = log_level
         Logging.appenders.rolling_file(
@@ -62,7 +62,7 @@ module SiteHook
           :age => 'daily',
           :layout => Logging.layouts.pattern(color_scheme: 'default'),
         )
-        @ll.debug "Initialized #{self}"
+        @ll.log.debug "Initialized #{self}"
       end
     end
   end
