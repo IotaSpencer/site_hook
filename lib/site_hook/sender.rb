@@ -32,7 +32,9 @@ module SiteHook
         @log = logger
         instance = self::Build.new
         meths = instance.methods.select { |x| x =~ /^do_/ }
-        puts meths
+        meths.each do |m|
+          instance.method(m).call
+        end
       end
     end
   end
