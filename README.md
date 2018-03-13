@@ -1,28 +1,24 @@
 # SiteHook
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/site_hook`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
 
 Add this line to your application's Gemfile:
 
-```ruby
-gem 'site_hook'
-```
+`gem 'site_hook'`
 
 And then execute:
 
-    $ bundle
+`$ bundle`
 
 Or install it yourself as:
 
-    $ gem install site_hook
+`gem install site_hook --user-install # as a user`
+`sudo gem install site_hook # as a sudoer`
+`gem install site_hook # as root`
 
 ## Usage
 
-TODO: Write usage instructions here
+You'll need to setup a `~/.jph-rc` file and make a `~/.jph/` directory. The file is for runtime configuration, and the directory is used for logging and debugging.
 
 ## Development
 
