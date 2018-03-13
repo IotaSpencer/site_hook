@@ -30,7 +30,7 @@ module SiteHook
         @jekyll_source = jekyll_source
         @build_dest = build_dest
         @log = logger
-        instance = self.Build.new
+        instance = self::Build.new
         meths = instance.methods.select { |x| x =~ /^do_/ }
         puts meths
       end
