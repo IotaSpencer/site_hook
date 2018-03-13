@@ -20,6 +20,7 @@ module SiteHook
     BuildLog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build'])
     set port: 9090
     set bind: '127.0.0.1'
+    set server: %w(thin)
     enable :raise_errors
 
     def Webhook.verified?(body, hub_sig, secret)
