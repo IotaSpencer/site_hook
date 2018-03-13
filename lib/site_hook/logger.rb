@@ -1,6 +1,16 @@
 require 'logging'
 
 module SiteHook
+  def mklogdir
+    path = Pathname(Dir.home).join('.jph', 'logs')
+    if path.exist?
+    else
+      FileUtils.mkpath(path.to_s)
+    end
+  end
+
+  module_function :mklogdir
+
   class LogLogger
     attr :log
     attr :log_level
@@ -21,18 +31,6 @@ module SiteHook
 
   class HookLogger
     Logging.logger.root.appenders = Logging.appenders.stdout
-
-    def HookLogger.mklogdir
-      path = Pathname(Dir.home).join('.jph', 'logs')
-      @@ll.debug("Checking if #{path} exists.")
-      if path.exist?
-        @@ll.debug("#{path} exists. Continuing as normal.")
-      else
-        @@ll.debug("#{path} doesn't exist. Creating.. ")
-        FileUtils.mkpath(path.to_s)
-        @@ll.debug("#{path} created.")
-      end
-    end
 
     class Hook
       attr :log

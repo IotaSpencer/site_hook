@@ -31,6 +31,7 @@ class CLI < Thor
   def run
     webhook = SiteHook::Webhook.new
     webhook.settings['logger'] = {}
+    SiteHook.mklogdir
     webhook.settings['logger']['hook'] = SiteHook::HookLogger.new(options[:log_levels])
     webhook.settings['logger']['build'] = SiteHook::HookLogger::Build.new(options[:log_level])
     SiteHook::Webhook.run!
