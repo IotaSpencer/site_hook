@@ -23,7 +23,10 @@ module SiteHook
         end
 
         def do_build
-          stdout_str, stderr_str, status = Open3.capture3("jekyll build --source #{@jekyll_source} --destination #{Pathname(@build_dest).to_path}")
+          begin
+            stdout_str, stderr_str, status = Open3.capture3("jekyll build --source #{@jekyll_source} --destination #{Pathname(@build_dest).to_path}")
+          rescue TypeError
+          end
         end
       end
 
