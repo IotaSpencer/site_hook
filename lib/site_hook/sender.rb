@@ -25,7 +25,7 @@ module SiteHook
 
         def do_pull
           g = Git.open(@jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
-          g.pull
+          g.pull(Git::Repo, Git::Branch)
         end
 
         def do_build
