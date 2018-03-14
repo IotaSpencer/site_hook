@@ -12,6 +12,7 @@ module SiteHook
         def do_grab_version
           begin
             stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
+            Jekyll.instance_variable_get('@log').log.info("Jekyll Version: #{stdout_str}")
           rescue Errno::ENOENT
             Jekyll.instance_variable_get('@log').log.fatal('Jekyll not installed! Gem and Webhook will not function')
             Process.kill('INT', Process.pid)
@@ -20,7 +21,7 @@ module SiteHook
 
         def do_pull
           g = Git.open(Jekyll.instance_variable_get('@jekyll_source'), :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
-          g.pull(g.repo, g.current_branch)
+          g.pull
         end
 
         def do_build
