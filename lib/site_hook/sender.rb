@@ -40,6 +40,7 @@ module SiteHook
               outerr = outerr_io.read.lines
               outerr.each do |line|
                 line = Paint.unpaint(line)
+                line = line.squish
                 case
                 when line =~ /done in .* seconds/
                   logger.info(line)
