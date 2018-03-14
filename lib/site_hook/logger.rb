@@ -1,29 +1,26 @@
 require 'logging'
 require 'active_support/core_ext/string'
-
+Logging.init %w(DEBUG INFO WARN ERROR FATAL)
 Logging.color_scheme(
-  'bright',
-  :levels => {
-    :info => :blue,
-    :warn => :yellow,
-    :error => :red,
-    :fatal => [:white, :on_red],
-  },
-  :date => :white,
-  :logger => :cyan,
-  :message => :green,
-)
+    'bright',
+    :levels  => {
+        :info  => :blue,
+        :warn  => :yellow,
+        :error => :red,
+        :fatal => [:white, :on_red],
+    },
+    :date    => :white,
+    :logger  => :cyan,
+    :message => :green,
+    )
 
 layout = Logging.layouts.pattern \
-  :pattern => '[%d] %-5l %c: %m\n',
+  :pattern      => '[%d] %-5l %c: %m\n',
   :date_pattern => '%Y-%m-%d %H:%M:%S',
   :color_scheme => 'bright'
 
-# only show "info" or higher messages on STDOUT using our layout
 Logging.appenders.stdout \
   :layout => layout
-
-# send all log events to the development log (including debug) using our layout
 
 module SiteHook
   def mklogdir
@@ -45,10 +42,10 @@ module SiteHook
     attr :log_level
 
     def initialize(log_level = 'info')
-      @log = Logging.logger[SiteHook.safe_log_name(self)]
+      @log    = Logging.logger[SiteHook.safe_log_name(self)]
       flayout = Logging.appenders.rolling_file \
         Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
-        :age => 'daily',
+        :age     => 'daily',
         :pattern => '[%d] %-5l %c: %m\n'
       @log.add_appenders 'stdout', flayout
       @log.level = log_level
@@ -66,10 +63,10 @@ module SiteHook
 
       def initialize(log_level = nil)
         LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
-        @log = Logging.logger[SiteHook.safe_log_name(self)]
+        @log    = Logging.logger[SiteHook.safe_log_name(self)]
         flayout = Logging.appenders.rolling_file \
           Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
-          :age => 'daily',
+          :age     => 'daily',
           :pattern => '[%d] %-5l %c: %m\n'
         @log.add_appenders 'stdout', flayout
         @log.level = log_level
@@ -82,10 +79,10 @@ module SiteHook
 
       def initialize(log_level = nil)
         LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
-        @log = Logging.logger[SiteHook.safe_log_name(self)]
+        @log    = Logging.logger[SiteHook.safe_log_name(self)]
         flayout = Logging.appenders.rolling_file \
           Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
-          :age => 'daily',
+          :age     => 'daily',
           :pattern => '[%d] %-5l %c: %m\n'
         @log.add_appenders 'stdout', flayout
         @log.level = log_level
@@ -98,10 +95,10 @@ module SiteHook
 
       def initialize(log_level = nil)
         LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
-        @log = Logging.logger[SiteHook.safe_log_name(self)]
+        @log    = Logging.logger[SiteHook.safe_log_name(self)]
         flayout = Logging.appenders.rolling_file \
           Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
-          :age => 'daily',
+          :age     => 'daily',
           :pattern => '[%d] %-5l %c: %m\n'
         @log.add_appenders 'stdout', flayout
         @log.level = log_level

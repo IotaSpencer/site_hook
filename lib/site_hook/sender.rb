@@ -30,7 +30,16 @@ module SiteHook
         end
 
         def do_build
-          jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
+          # Configuration file: /home/ken/sites/iotaspencer.me/_config.yml
+          # Source: /home/ken/sites/iotaspencer.me
+          # Destination: /var/www/iotaspencer.me
+          # Incremental build: disabled. Enable with --incremental
+          # Generating...
+          # GitHub Metadata: No GitHub API authentication could be found. Some fields may be missing or have incorrect data.
+          # done in 6.847 seconds.
+          # Auto-regeneration: disabled. Use --watch to enable.
+
+              jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           logger        = Jekyll.instance_variable_get('@log')
           begin
@@ -44,6 +53,12 @@ module SiteHook
                 case
                 when line =~ /done in .* seconds/
                   logger.info(line)
+                when line =~ /Generating/
+                  logger.info(line)
+                when line =~ /Incremental|Auto-regeneration/
+                  logger.off(line)
+                else
+                  logger.info
                 end
               end
               exit_status = thr.value
