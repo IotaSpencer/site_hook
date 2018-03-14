@@ -31,12 +31,13 @@ module SiteHook
         def do_build
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
+          logger        = Jekyll.instance_variable_get('@log')
           begin
             Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
               pid = thr.pid
 
-              puts outerr_io.read
-
+              outerr = outerr_io.read
+              outerr.inspect
               exit_status = thr.value
             }
           end
