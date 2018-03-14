@@ -11,7 +11,7 @@ module SiteHook
 
         def do_grab_version
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          build_dest = Jekyll.instance_variable_get('@build_dest')
+          build_dest    = Jekyll.instance_variable_get('@build_dest')
           begin
             stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "jekyll --version --source #{jekyll_source}")
             Jekyll.instance_variable_get('@log').info("Jekyll Version: #{stdout_str}")
@@ -23,21 +23,20 @@ module SiteHook
 
         def do_pull
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          build_dest = Jekyll.instance_variable_get('@build_dest')
-          g = Git.open(jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
+          build_dest    = Jekyll.instance_variable_get('@build_dest')
+          g             = Git.open(jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
           g.pull
         end
 
         def do_build
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          build_dest = Jekyll.instance_variable_get('@build_dest')
+          build_dest    = Jekyll.instance_variable_get('@build_dest')
           begin
-            Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')},"bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") do |in_io, outerr_io, thread|
-              outerr_io.each do |line|
-                Jekyll.instance_variable_get('@log').info(line)
-              end
-
+            outerr_str, status = Open3.capture2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}")
+            outerr_str.each do |line|
+              Jekyll.instance_variable_get('@log').info(line)
             end
+
           rescue TypeError
           end
         end
