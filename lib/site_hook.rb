@@ -48,7 +48,8 @@ module SiteHook
       end
       if Webhook.verified?(req_body.to_s, sig, project['hookpass'])
         BuildLog.log.debug 'Attempting to build...'
-        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: BuildLog)
+        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: BuildLog.log)
+        if jekyllbuild == 0
         status 200
         headers 'Content-Type' => 'application/json'
         body {

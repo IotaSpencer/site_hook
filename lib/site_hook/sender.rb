@@ -25,7 +25,7 @@ module SiteHook
 
         def do_pull
           g = Git.open(@jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
-          g.pull(Git::Repo, Git::Branch)
+          g.pull()
         end
 
         def do_build
@@ -44,8 +44,13 @@ module SiteHook
         @log = logger
         instance = self::Build.new
         meths = instance.methods.select { |x| x =~ /^do_/ }
+
         meths.each do |m|
+          @log.debug("Running #{m}")
           instance.method(m).call
+          @log.debug("Ran #{m}")
+
+          return 0
         end
       end
     end
