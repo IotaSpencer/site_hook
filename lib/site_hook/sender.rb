@@ -9,11 +9,6 @@ module SiteHook
 
       class Build
 
-        # @param [String,Pathname] jekyll_source Path
-        # @param [String,Pathname] build_dest path
-        #        def initialize(jekyll_source, build_dest, logger:)
-        #        end
-
         def do_grab_version
           begin
             stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
@@ -24,15 +19,15 @@ module SiteHook
         end
 
         def do_pull
-          g = Git.open(@jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
-          g.pull()
+          g = Git.open(Jekyll.instance_variable_get('@jekyll_source'), :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
+          g.pull(g.repo, g.current_branch)
         end
 
         def do_build
-          puts "#{@jekyll_source}"
-          puts "#{@build_dest}"
+          puts "#{Jekyll.instance_variable_get('@jekyll_source')}"
+          puts "#{Jekyll.instance_variable_get('@build_dest')}"
           begin
-            stdout_str, stderr_str, status = Open3.capture3("jekyll build --source #{@jekyll_source} --destination #{Pathname(@build_dest).to_path}")
+            stdout_str, stderr_str, status = Open3.capture3("jekyll build --source #{Jekyll.instance_variable_get('@jekyll_source')} --destination #{Pathname(Jekyll.instance_variable_get('@build_dest')).to_path}")
           rescue TypeError
           end
         end
