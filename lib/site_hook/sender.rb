@@ -33,9 +33,7 @@ module SiteHook
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           begin
             outerr_str, status = Open3.capture2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}")
-            outerr_str.each do |line|
-              Jekyll.instance_variable_get('@log').info(line)
-            end
+            puts outerr_str
 
           rescue TypeError
           end
