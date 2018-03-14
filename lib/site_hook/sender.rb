@@ -10,8 +10,10 @@ module SiteHook
       class Build
 
         def do_grab_version
+          jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
+          build_dest = Jekyll.instance_variable_get('@build_dest')
           begin
-            stdout_str, status = Open3.capture2('jekyll --version')
+            stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')}, "jekyll --version --source #{jekyll_source}")
             Jekyll.instance_variable_get('@log').info("Jekyll Version: #{stdout_str}")
           rescue Errno::ENOENT
             Jekyll.instance_variable_get('@log').fatal('Jekyll not installed! Gem and Webhook will not function')
@@ -20,7 +22,9 @@ module SiteHook
         end
 
         def do_pull
-          g = Git.open(Jekyll.instance_variable_get('@jekyll_source'), :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
+          jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
+          build_dest = Jekyll.instance_variable_get('@build_dest')
+          g = Git.open(jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
           g.pull
         end
 
