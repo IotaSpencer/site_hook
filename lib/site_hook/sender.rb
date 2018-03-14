@@ -49,7 +49,7 @@ module SiteHook
               outerr = outerr_io.read.lines
               outerr.each do |line|
                 line = Paint.unpaint(line)
-                line = line.squish
+                line.squish!
                 case
                 when line =~ /done in .* seconds/
                   logger.info(line)
@@ -58,7 +58,7 @@ module SiteHook
                 when line =~ /Incremental|Auto-regeneration/
                   print ''
                 else
-                  logger.info
+                  print ''
                 end
               end
               exit_status = thr.value
