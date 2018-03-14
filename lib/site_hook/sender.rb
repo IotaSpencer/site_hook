@@ -11,7 +11,7 @@ module SiteHook
 
         def do_grab_version
           begin
-            stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
+            stdout_str, status = Open3.capture2('jekyll --version')
             Jekyll.instance_variable_get('@log').info("Jekyll Version: #{stdout_str}")
           rescue Errno::ENOENT
             Jekyll.instance_variable_get('@log').fatal('Jekyll not installed! Gem and Webhook will not function')
@@ -28,7 +28,12 @@ module SiteHook
           puts "#{Jekyll.instance_variable_get('@jekyll_source')}"
           puts "#{Jekyll.instance_variable_get('@build_dest')}"
           begin
-            stdout_str, stderr_str, status = Open3.capture3("jekyll build --source #{Jekyll.instance_variable_get('@jekyll_source')} --destination #{Pathname(Jekyll.instance_variable_get('@build_dest')).to_path}")
+            Open3.popen2e("jekyll build --source #{Jekyll.instance_variable_get('@jekyll_source')} --destination #{Pathname(Jekyll.instance_variable_get('@build_dest')).to_path}") do |in_io, outerr_io, thread|
+              outerr_io.each do |line|
+                Jekyll.instance_variable_get('@log').info(line)
+              end
+
+            end
           rescue TypeError
           end
         end
@@ -36,10 +41,10 @@ module SiteHook
 
       def self.build(jekyll_source, build_dest, logger:)
         @jekyll_source = jekyll_source
-        @build_dest = build_dest
-        @log = logger
-        instance = self::Build.new
-        meths = instance.methods.select { |x| x =~ /^do_/ }
+        @build_dest    = build_dest
+        @log           = logger
+        instance       = self::Build.new
+        meths          = instance.methods.select { |x| x =~ /^do_/ }
 
         meths.each do |m|
           @log.debug("Running #{m}")
