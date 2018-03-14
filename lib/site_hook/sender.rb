@@ -35,7 +35,7 @@ module SiteHook
             Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
               pid = thr.pid
 
-              outerr_io.gets
+              outerr_io.read
 
               exit_status = thr.value
             }
