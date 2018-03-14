@@ -37,7 +37,7 @@ module SiteHook
               pid = thr.pid
 
               outerr = outerr_io.read
-              outerr.inspect
+              puts outerr.inspect
               exit_status = thr.value
             }
           end
