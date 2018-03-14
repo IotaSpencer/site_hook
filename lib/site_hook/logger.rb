@@ -1,3 +1,4 @@
+require 'paint'
 require 'logging'
 require 'active_support/core_ext/string'
 Logging.init %w(NONE DEBUG INFO WARN ERROR FATAL)
