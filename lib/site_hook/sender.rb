@@ -1,5 +1,6 @@
 require 'open3'
 require 'site_hook/logger'
+require 'git'
 
 module SiteHook
   module Senders
@@ -17,9 +18,14 @@ module SiteHook
           begin
             stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
           rescue Errno::ENOENT
-            Jekyll.instance_variable_get('@log').log.error('Jekyll not installed! Gem and Webhook will not function')
+            Jekyll.instance_variable_get('@log').log.fatal('Jekyll not installed! Gem and Webhook will not function')
             Process.kill('INT', Process.pid)
           end
+        end
+
+        def do_pull
+          g = Git.open(@jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
+          g.pull
         end
 
         def do_build

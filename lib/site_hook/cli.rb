@@ -3,8 +3,9 @@ require 'thor'
 module SiteHook
   def self.log_levels
     default = {
-      hook: 'info',
-      build: 'info',
+      'hook' => 'info',
+      'build' => 'info',
+      'git' => 'info',
     }
     begin
       log_level = YAML.load_file(Pathname(Dir.home).join('.jph-rc')).fetch('log_levels')
