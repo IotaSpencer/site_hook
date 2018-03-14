@@ -12,9 +12,9 @@ module SiteHook
         def do_grab_version
           begin
             stdout_str, stderr_str, status = Open3.capture3('jekyll --version')
-            Jekyll.instance_variable_get('@log').log.info("Jekyll Version: #{stdout_str}")
+            Jekyll.instance_variable_get('@log').info("Jekyll Version: #{stdout_str}")
           rescue Errno::ENOENT
-            Jekyll.instance_variable_get('@log').log.fatal('Jekyll not installed! Gem and Webhook will not function')
+            Jekyll.instance_variable_get('@log').fatal('Jekyll not installed! Gem and Webhook will not function')
             Process.kill('INT', Process.pid)
           end
         end
@@ -46,8 +46,9 @@ module SiteHook
           instance.method(m).call
           @log.debug("Ran #{m}")
 
-          return 0
+
         end
+        return 0
       end
     end
   end
