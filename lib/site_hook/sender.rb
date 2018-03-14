@@ -39,7 +39,6 @@ module SiteHook
 
               exit_status = thr.value
             }
-          rescue TypeError
           end
         end
       end
