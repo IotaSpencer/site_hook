@@ -12,11 +12,16 @@ module SiteHook
   #  end
   module_function
 
-  def options; @opts end
-  def options=(v); @opts = v end
+  def options;
+    @opts
+  end
+
+  def options=(v)
+    ; @opts = v
+  end
 
   class Webhook < Sinatra::Base
-    HookLog = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook'])
+    HookLog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook'])
     BuildLog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build'])
     set port: 9090
     set bind: '127.0.0.1'
@@ -29,6 +34,7 @@ module SiteHook
         true
       end
     end
+
     get '/' do
       halt 403, {'Content-Type' => 'application/json'}, {message: 'no permission'}.to_json
     end
@@ -38,8 +44,8 @@ module SiteHook
     post '/webhook/:hook_name' do
       request.body.rewind
       req_body = request.body.read
-      sig = request.env['HTTP_X_HUB_SIGNATURE'].sub!(/^sha1=/, '')
-      jph_rc = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
+      sig      = request.env['HTTP_X_HUB_SIGNATURE'].sub!(/^sha1=/, '')
+      jph_rc   = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
       projects = jph_rc['projects']
       begin
         project = projects.fetch(params[:hook_name])
@@ -50,11 +56,19 @@ module SiteHook
         BuildLog.log.debug 'Attempting to build...'
         jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: BuildLog.log)
         if jekyllbuild == 0
-        status 200
-        headers 'Content-Type' => 'application/json'
-        body {
-          {"message": "success"}.to_json
-        }
+          status 200
+          headers 'Content-Type' => 'application/json'
+          body {
+            {"message": "success"}.to_json
+          }
+        else
+          status 404
+          headers 'Content-Type' => 'application/json'
+          body {
+            {'message': 'failure'}
+          }
+        end
+
       else
         halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret'}.to_json
       end
