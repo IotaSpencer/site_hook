@@ -32,7 +32,7 @@ module SiteHook
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           begin
-            Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
+            Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
               pid = thr.pid
 
               puts outerr_io.gets
