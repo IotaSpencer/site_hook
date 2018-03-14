@@ -2,7 +2,7 @@ require 'open3'
 require 'site_hook/logger'
 require 'git'
 require 'paint'
-
+Logging.init %w(NONE DEBUG INFO WARN ERROR FATAL)
 module SiteHook
   module Senders
     class Jekyll
@@ -56,7 +56,7 @@ module SiteHook
                 when line =~ /Generating/
                   logger.info(line)
                 when line =~ /Incremental|Auto-regeneration/
-                  logger.off(line)
+                  print ''
                 else
                   logger.info
                 end

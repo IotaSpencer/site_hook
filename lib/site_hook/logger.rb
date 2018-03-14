@@ -1,6 +1,6 @@
 require 'logging'
 require 'active_support/core_ext/string'
-Logging.init %w(DEBUG INFO WARN ERROR FATAL)
+Logging.init %w(NONE DEBUG INFO WARN ERROR FATAL)
 Logging.color_scheme(
     'bright',
     :levels  => {
