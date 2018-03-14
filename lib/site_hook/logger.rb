@@ -10,7 +10,7 @@ Logging.init %w(NONE DEBUG INFO WARN ERROR FATAL)
 Logging.color_scheme(
     'bright',
     :levels  => {
-        :debug => Logging::ColorScheme.ORANGE,
+        :debug => Logging::ColorScheme::ORANGE,
         :info  => :blue,
         :warn  => :yellow,
         :error => :red,
