@@ -25,10 +25,10 @@ module SiteHook
         end
 
         def do_build
-          puts "#{Jekyll.instance_variable_get('@jekyll_source')}"
-          puts "#{Jekyll.instance_variable_get('@build_dest')}"
+          jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
+          build_dest = Jekyll.instance_variable_get('@build_dest')
           begin
-            Open3.popen2e("jekyll build --source #{Jekyll.instance_variable_get('@jekyll_source')} --destination #{Pathname(Jekyll.instance_variable_get('@build_dest')).to_path}") do |in_io, outerr_io, thread|
+            Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')},"bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") do |in_io, outerr_io, thread|
               outerr_io.each do |line|
                 Jekyll.instance_variable_get('@log').info(line)
               end
