@@ -13,7 +13,7 @@ module SiteHook
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest = Jekyll.instance_variable_get('@build_dest')
           begin
-            stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile')}, "jekyll --version --source #{jekyll_source}")
+            stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "jekyll --version --source #{jekyll_source}")
             Jekyll.instance_variable_get('@log').info("Jekyll Version: #{stdout_str}")
           rescue Errno::ENOENT
             Jekyll.instance_variable_get('@log').fatal('Jekyll not installed! Gem and Webhook will not function')
