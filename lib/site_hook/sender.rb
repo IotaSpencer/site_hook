@@ -1,6 +1,7 @@
 require 'open3'
 require 'site_hook/logger'
 require 'git'
+require 'paint'
 
 module SiteHook
   module Senders
@@ -36,8 +37,14 @@ module SiteHook
             Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
               pid = thr.pid
 
-              outerr = outerr_io.read
-              puts outerr.inspect
+              outerr = outerr_io.read.lines
+              outerr.each do |line|
+                line = Paint.unpaint(line)
+                case
+                when line =~ /done in .* seconds/
+                  logger.info(line)
+                end
+              end
               exit_status = thr.value
             }
           end
