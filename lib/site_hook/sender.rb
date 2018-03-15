@@ -12,11 +12,12 @@ module SiteHook
         def do_grab_version
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
+          log           = Jekyll.instance_variable_get('@log')
           begin
             stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "jekyll --version --source #{jekyll_source}")
-            Jekyll.instance_variable_get('@log').info("Jekyll Version: #{stdout_str}")
+            log.info("Jekyll Version: #{stdout_str}")
           rescue Errno::ENOENT
-            Jekyll.instance_variable_get('@log').fatal('Jekyll not installed! Gem and Webhook will not function')
+            log.fatal('Jekyll not installed! Gem and Webhook will not function')
             Process.kill('INT', Process.pid)
           end
         end
@@ -38,9 +39,9 @@ module SiteHook
           # done in 6.847 seconds.
           # Auto-regeneration: disabled. Use --watch to enable.
 
-              jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
+          jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
-          logger        = Jekyll.instance_variable_get('@log')
+          log        = Jekyll.instance_variable_get('@log')
           begin
             Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
               pid = thr.pid
@@ -51,9 +52,11 @@ module SiteHook
                 line.squish!
                 case
                 when line =~ /done in .* seconds/
-                  logger.info(line)
+                  log.info(line)
                 when line =~ /Generating/
-                  logger.info(line)
+                  log.info(line)
+                when line =~ /Configuration file:|Source:|Destination:/
+                  log.debug(line)
                 when line =~ /Incremental|Auto-regeneration/
                   print ''
                 else

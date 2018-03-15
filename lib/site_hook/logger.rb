@@ -1,16 +1,12 @@
 require 'paint'
 require 'logging'
 require 'active_support/core_ext/string'
-module Logging
-  class ColorScheme
-    ORANGE = Paint.color['orange']
-  end
-end
+
 Logging.init %w(NONE DEBUG INFO WARN ERROR FATAL)
 Logging.color_scheme(
     'bright',
     :levels  => {
-        :debug => Logging::ColorScheme::ORANGE,
+        :debug => [:yellow, :on_white],
         :info  => :blue,
         :warn  => :yellow,
         :error => :red,
