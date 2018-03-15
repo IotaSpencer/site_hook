@@ -108,5 +108,14 @@ module SiteHook
         LL.log.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
     end
+    class FakeLog < StringIO
+      attr :output
+      def initialize
+        @output = []
+      end
+      def info(message)
+        @output << message
+      end
+    end
   end
 end
