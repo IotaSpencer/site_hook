@@ -28,7 +28,7 @@ module SiteHook
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           g             = Git.open(jekyll_source, :log => logger)
           g.pull
-          puts logger.output.inspect
+          puts logger.info_output.inspect
         end
 
         def do_build

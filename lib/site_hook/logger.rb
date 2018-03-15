@@ -109,7 +109,7 @@ module SiteHook
       end
     end
     class FakeLog < StringIO
-      attr :output
+      attr :info_output, :debug_output
       def initialize
         @info_output = []
         @debug_output = []
