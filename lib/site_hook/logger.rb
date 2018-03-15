@@ -117,13 +117,12 @@ module SiteHook
       def info(message)
         case
         when message =~ /Starting Git/
-          nil
+
         when message =~ /git .* pull/
           @info_output << "Pulling..."
           @debug_output << message
 
         end
-        @info_output << message
       end
       def debug(message)
         @debug_output << message
