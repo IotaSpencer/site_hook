@@ -23,10 +23,12 @@ module SiteHook
         end
 
         def do_pull
+          logger = SiteHook::HookLogger::FakeLog.new
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
-          g             = Git.open(jekyll_source, :log => SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log)
+          g             = Git.open(jekyll_source, :log => logger)
           g.pull
+          puts logger.output.inspect
         end
 
         def do_build
