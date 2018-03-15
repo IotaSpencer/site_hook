@@ -29,8 +29,6 @@ module SiteHook
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           g             = Git.open(jekyll_source, :log => fakelog)
           g.pull
-          puts "Info: #{logger.info_output.inspect}"
-          puts "Debug: #{logger.debug_output.inspect}"
           fakelog.entries.each do |level, entries|
             puts entries.inspect
 
