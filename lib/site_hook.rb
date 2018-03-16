@@ -21,13 +21,15 @@ module SiteHook
   end
 
   class Webhook < Sinatra::Base
-    HookLog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook'])
-    BuildLog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build'])
+    hooklog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
+    buildlog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
+    applog = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
     set port: 9090
     set bind: '127.0.0.1'
     set server: %w(thin)
     set quiet: true
     set raise_errors: true
+    set logger: applog
 
     def Webhook.verified?(body, hub_sig, secret)
       if hub_sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
@@ -53,8 +55,8 @@ module SiteHook
         halt 404, {'Content-Type' => 'application/json'}, {message: 'no such project', status: 1}.to_json
       end
       if Webhook.verified?(req_body.to_s, sig, project['hookpass'])
-        BuildLog.log.debug 'Attempting to build...'
-        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: BuildLog.log)
+        buildlog.debug 'Attempting to build...'
+        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: buildlog)
         if jekyllbuild == 0
           status 200
           headers 'Content-Type' => 'application/json'
