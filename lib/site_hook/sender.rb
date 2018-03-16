@@ -36,14 +36,7 @@ module SiteHook
         end
 
         def do_build
-          # Configuration file: /home/ken/sites/iotaspencer.me/_config.yml
-          # Source: /home/ken/sites/iotaspencer.me
-          # Destination: /var/www/iotaspencer.me
-          # Incremental build: disabled. Enable with --incremental
-          # Generating...
-          # GitHub Metadata: No GitHub API authentication could be found. Some fields may be missing or have incorrect data.
-          # done in 6.847 seconds.
-          # Auto-regeneration: disabled. Use --watch to enable.
+
 
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
@@ -56,6 +49,14 @@ module SiteHook
               outerr.each do |line|
                 line = Paint.unpaint(line)
                 line.squish!
+                # Configuration file: /home/ken/sites/iotaspencer.me/_config.yml
+                # Source: /home/ken/sites/iotaspencer.me
+                # Destination: /var/www/iotaspencer.me
+                # Incremental build: disabled. Enable with --incremental
+                # Generating...
+                # GitHub Metadata: No GitHub API authentication could be found. Some fields may be missing or have incorrect data.
+                # done in 6.847 seconds.
+                # Auto-regeneration: disabled. Use --watch to enable.
                 case
                 when line =~ /done in .* seconds/
                   log.info(line)

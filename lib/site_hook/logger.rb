@@ -125,7 +125,20 @@ module SiteHook
         end
       end
       def debug(message)
-        @debug_output << message
+        case
+        when message =~ /\n/
+          msgs = message.lines
+          msgs.each do |msg|
+            case
+            when msg =~ /From (github|gitlab)\.com:(.+)\/(.+)(\.git)?/
+              @debug_output << msg.gsub(/From git(hub|lab)\.com:(.+)\/(.+)(\.git)/, "Pulling via \2/\3 on \1.")
+            when msg =~ / \* branch/
+              @debug_output << msg.gsub(/ \* branch\s+(.+)/, "Updating via '\1' branch")
+            end
+          end
+        else
+          @debug_output << message
+        end
       end
 
       def entries
