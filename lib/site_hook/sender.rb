@@ -30,8 +30,7 @@ module SiteHook
           g             = Git.open(jekyll_source, :log => fakelog)
           g.pull
           fakelog.entries.each do |level, entries|
-            puts entries.inspect
-
+            entries.each { |entry| reallog.send("#{level}", entry) }
           end
         end
 
