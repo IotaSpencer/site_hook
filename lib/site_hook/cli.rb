@@ -6,6 +6,7 @@ module SiteHook
       'hook' => 'info',
       'build' => 'info',
       'git' => 'info',
+      'app' => 'info'
     }
     begin
       log_level = YAML.load_file(Pathname(Dir.home).join('.jph-rc')).fetch('log_levels')
@@ -29,7 +30,7 @@ module SiteHook
       puts SiteHook::VERSION
     end
 
-    method_option(:log_levels, type: :hash, banner: 'LEVELS', default: SiteHook.log_levels, enum: %w(unknown fatal error warn info debug))
+    method_option(:log_levels, type: :hash, banner: 'LEVELS', default: SiteHook.log_levels)
 
     desc 'start', 'Start SiteHook'
 
