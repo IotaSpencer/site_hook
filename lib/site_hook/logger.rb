@@ -44,7 +44,7 @@ module SiteHook
     attr :log
     attr :log_level
 
-    def initialize(log_level = 'info')
+    def initialize(log_level = 'debug')
       @log    = Logging.logger[SiteHook.safe_log_name(self)]
       flayout = Logging.appenders.rolling_file \
         Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
@@ -129,11 +129,12 @@ module SiteHook
         when message =~ /\n/
           msgs = message.lines
           msgs.each do |msg|
+            msg.squish!
             case
             when msg =~ /From (github|gitlab)\.com:(.+)\/(.+)(\.git)?/
-              @debug_output << msg.gsub(/From git(hub|lab)\.com:(.+)\/(.+)(\.git)/, "Pulling via #{Regexp.last_match(2)}/#{Regexp.last_match(3)} on #{Regexp.last_match(1)}.")
+              @debug_output << msg.gsub(/From git(hub|lab)\.com:(.+)\/(.+)(\.git)/, "Pulling via $2/$3 on $1.")
             when msg =~ / \* branch/
-              @debug_output << msg
+              @debug_output << msg.gsub(/ \* branch (.+).*/, 'Using $1 branch')
             end
           end
         else
