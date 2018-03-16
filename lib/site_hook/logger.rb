@@ -133,6 +133,7 @@ module SiteHook
             when msg =~ /From (github|gitlab)\.com:(.+)\/(.+)(\.git)?/
               @debug_output << msg.gsub(/From git(hub|lab)\.com:(.+)\/(.+)(\.git)/, "Pulling via #{Regexp.last_match(2)}/#{Regexp.last_match(3)} on #{Regexp.last_match(1)}.")
             when msg =~ / \* branch/
+              puts msg
               @debug_output << msg.gsub(/ \* branch\s+(.+)/, "Using '#{Regexp.last_match(1)}' branch")
             end
           end
