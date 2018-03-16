@@ -132,9 +132,9 @@ module SiteHook
             msg.squish!
             case
             when msg =~ /From (github|gitlab)\.com:(.+)\/(.+)(\.git)?/
-              @debug_output << "Pulling via $2/$3 on $1."
-            when msg =~ / \* branch (.+).*/
-              @debug_output << 'Using $1 branch'
+              @debug_output << "Pulling via #{$2}/#{$3} on #{$1}."
+            when msg =~ /\* branch (.+).*/
+              @debug_output << "Using #{$1} branch"
             end
           end
         else
