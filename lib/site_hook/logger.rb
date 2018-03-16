@@ -44,7 +44,7 @@ module SiteHook
     attr :log
     attr :log_level
 
-    def initialize(log_level = 'debug')
+    def initialize(log_level = 'info') # only change this to debug when testing
       @log    = Logging.logger[SiteHook.safe_log_name(self)]
       flayout = Logging.appenders.rolling_file \
         Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
@@ -56,10 +56,26 @@ module SiteHook
   end
 
   mklogdir
-  LL = LogLogger.new
-  LL.log.debug "#{LL.class} initialized."
+  LL = LogLogger.new.log
+  LL.debug "#{SiteHook.safe_log_name(LL.class)} initialized."
 
   class HookLogger
+    class AppLog
+      attr :log
+      attr :log_level
+
+      def initialize(log_level = nil)
+        LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
+        @log    = Logging.logger[SiteHook.safe_log_name(self)]
+        flayout = Logging.appenders.rolling_file \
+          Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
+          :age     => 'daily',
+          :pattern => '[%d] %-5l %c: %m\n'
+        @log.add_appenders 'stdout', flayout
+        @log.level = log_level
+        LL.log.debug "Initialized #{SiteHook.safe_log_name(self)}"
+      end
+    end
     class HookLog
       attr :log
       attr :log_level
