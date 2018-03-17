@@ -20,12 +20,6 @@ module SiteHook
     set quiet: true
     set raise_errors: true
     set logger: @applog
-    configure do
-      use ::Rack::CommonLogger, @applog
-    end
-    before {
-      env["rack.errors"] = @errorlog
-    }
 
     def Webhook.verified?(body, sig, secret, plaintext:)
       if plaintext
@@ -40,7 +34,6 @@ module SiteHook
           true
         end
       end
-
     end
 
     get '/' do
