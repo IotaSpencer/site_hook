@@ -63,7 +63,7 @@ module SiteHook
       plaintext = false
       signature = nil
       event     = request.env.fetch('HTTP_X_GITLAB_EVENT', nil) || request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
-      @app.info event.inspect
+      @applog.info event.inspect
       if event != 'push'
         if event.nil?
           halt 400, {'Content-Type' => 'application/json'}, {message: 'no event header'}.to_json
