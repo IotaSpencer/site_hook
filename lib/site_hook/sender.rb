@@ -35,8 +35,6 @@ module SiteHook
         end
 
         def do_build
-
-
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           log        = Jekyll.instance_variable_get('@log')
@@ -86,8 +84,6 @@ module SiteHook
           @log.debug("Running #{m}")
           instance.method(m).call
           @log.debug("Ran #{m}")
-
-
         end
       end
     end
