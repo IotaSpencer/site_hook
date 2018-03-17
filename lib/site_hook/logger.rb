@@ -100,7 +100,9 @@ module SiteHook
         @log.level = log_level
         LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
-      alias_method :write, :error
+      def write(args)
+        self.error(args)
+      end
     end
     class HookLog
       attr :log
