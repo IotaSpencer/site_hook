@@ -1,9 +1,10 @@
 require 'site_hook/version'
 require 'site_hook/sender'
 require 'site_hook/logger'
+require 'recursive_open_struct'
 require 'site_hook/cli'
 require 'sinatra'
-require 'sinatra/json'
+require 'json'
 require 'yaml'
 
 module SiteHook
@@ -40,6 +41,8 @@ module SiteHook
     post '/webhook/:hook_name' do
       request.body.rewind
       req_body = request.body.read
+      js = JSON.parse(req_body)
+
       sig      = request.env['HTTP_X_HUB_SIGNATURE'].sub!(/^sha1=/, '')
       jph_rc   = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
       projects = jph_rc['projects']
