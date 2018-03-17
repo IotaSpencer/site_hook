@@ -9,9 +9,9 @@ require 'yaml'
 
 module SiteHook
   class Webhook < Sinatra::Base
-    @hooklog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
-    @buildlog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
-    @applog   = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
+    HOOKLOG  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
+    BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
+    APPLOG   = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
 
     set port: 9090
     set bind: '127.0.0.1'
@@ -27,7 +27,7 @@ module SiteHook
         end
       else
         if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
-          @applog.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
+          APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
           true
         end
       end
@@ -53,7 +53,7 @@ module SiteHook
       plaintext = false
       signature = nil
       event     = request.env.fetch('HTTP_X_GITLAB_EVENT', nil) || request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
-      @applog.info event.inspect
+      APPLOG.info event.inspect
       if event != 'push'
         if event.nil?
           halt 400, {'Content-Type' => 'application/json'}, {message: 'no event header'}.to_json
@@ -68,11 +68,11 @@ module SiteHook
         signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', '').sub!(/^sha1=/, '')
         plaintext = false
       else
-        @applog.debug(request.env.inspect)
+        APPLOG.debug(request.env.inspect)
       end
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext)
-        @buildlog.info 'Building...'
-        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: @buildlog)
+        BUILDLOG.info 'Building...'
+        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: BUILDLOG)
         if jekyllbuild == 0
           status 200
           headers 'Content-Type' => 'application/json'
