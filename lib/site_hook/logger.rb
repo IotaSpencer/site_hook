@@ -67,7 +67,7 @@ module SiteHook
       attr :log_level
 
       def initialize(log_level = nil)
-        LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
+        LL.debug "Initializing #{SiteHook.safe_log_name(self)}"
         @log    = Logging.logger[SiteHook.safe_log_name(self)]
         @log_level = log_level
 
@@ -77,7 +77,7 @@ module SiteHook
           :pattern => '[%d] %-5l %c: %m\n'
         @log.add_appenders 'stdout', flayout
         @log.level = log_level
-        LL.log.debug "Initialized #{SiteHook.safe_log_name(self)}"
+        LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
     end
     class HookLog
@@ -102,7 +102,7 @@ module SiteHook
       attr :log
 
       def initialize(log_level = nil)
-        LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
+        LL.debug "Initializing #{SiteHook.safe_log_name(self)}"
         @log    = Logging.logger[SiteHook.safe_log_name(self)]
         @log_level = log_level
 
@@ -113,7 +113,7 @@ module SiteHook
         @log.add_appenders 'stdout', flayout
         @log.level = log_level
 
-        LL.log.debug "Initialized #{SiteHook.safe_log_name(self)}"
+        LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
     end
 
@@ -121,7 +121,7 @@ module SiteHook
       attr :log
 
       def initialize(log_level = nil)
-        LL.log.debug "Initializing #{SiteHook.safe_log_name(self)}"
+        LL.debug "Initializing #{SiteHook.safe_log_name(self)}"
         @log    = Logging.logger[SiteHook.safe_log_name(self)]
         @log_level = log_level
 
@@ -131,7 +131,7 @@ module SiteHook
           :pattern => '[%d] %-5l %c: %m\n'
         @log.add_appenders 'stdout', flayout
         @log.level = log_level
-        LL.log.debug "Initialized #{SiteHook.safe_log_name(self)}"
+        LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
     end
     class FakeLog < StringIO
