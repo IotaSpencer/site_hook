@@ -24,7 +24,7 @@ module SiteHook
 
         def do_pull
           fakelog = SiteHook::HookLogger::FakeLog.new
-          reallog = SiteHook::HookLogger::GitLog.new.log
+          reallog = SiteHook::HookLogger::GitLog.new(SiteHook.log_levels).log
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest    = Jekyll.instance_variable_get('@build_dest')
           g             = Git.open(jekyll_source, :log => fakelog)
