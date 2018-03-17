@@ -147,9 +147,9 @@ module SiteHook
           msgs.each do |msg|
             msg.squish!
             case
-            when msg =~ /From (github|gitlab)\.com:(.+)\/(.+)(\.git)?/
+            when msg =~ /From (.*?):(.*?)\/(.*)(\.git)?/
               @debug_output << "Pulling via #{$2}/#{$3} on #{$1}."
-            when msg =~ /\* branch (.+) -> .*/
+            when msg =~ /\* branch (.*?) -> .*/
               @info_output << "Using #{$1} branch"
             end
           end
