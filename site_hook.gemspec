@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
     spec.metadata['source_uri'] = 'https://github.com/IotaSpencer/site_hook'
   end
 
-  spec.files = `git ls-files -z`.split('\x0').reject do |f|
+  spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(spec)/})
   end
   spec.bindir = 'bin'
