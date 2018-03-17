@@ -15,7 +15,7 @@ module SiteHook
           log           = Jekyll.instance_variable_get('@log')
           begin
             stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "jekyll --version --source #{jekyll_source}")
-            log.info("Jekyll Version: #{stdout_str}")
+            log.info("Jekyll Version: #{stdout_str.chomp!}")
           rescue Errno::ENOENT
             log.fatal('Jekyll not installed! Gem and Webhook will not function')
             Process.kill('INT', Process.pid)
@@ -79,7 +79,6 @@ module SiteHook
         @log           = logger
         instance       = self::Build.new
         meths          = instance.methods.select { |x| x =~ /^do_/ }
-
         meths.each do |m|
           @log.debug("Running #{m}")
           instance.method(m).call
