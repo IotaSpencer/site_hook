@@ -7,19 +7,6 @@ require 'sinatra/json'
 require 'yaml'
 
 module SiteHook
-  #  class << self
-  #    attr_accessor :opts
-  #  end
-  module_function
-
-  def options;
-    @opts
-  end
-
-  def options=(v)
-    ; @opts = v
-  end
-
   class Webhook < Sinatra::Base
     hooklog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     buildlog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
