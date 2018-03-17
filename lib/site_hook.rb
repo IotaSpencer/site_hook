@@ -11,13 +11,21 @@ module SiteHook
     hooklog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     buildlog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
     applog = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
+    errorlog = SiteHook::HookLogger::ErrorLog.new.log
+    applog.sync = true
+    errorlog.sync = true
     set port: 9090
     set bind: '127.0.0.1'
     set server: %w(thin)
     set quiet: true
     set raise_errors: true
     set logger: applog
-
+    configure do
+      use ::Rack::CommonLogger, applog
+    end
+    before {
+      env["rack.errors"] = errorlog
+    }
     def Webhook.verified?(body, hub_sig, secret)
       if hub_sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
         true
