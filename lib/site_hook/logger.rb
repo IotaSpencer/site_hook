@@ -79,30 +79,6 @@ module SiteHook
         @log.level = log_level
         LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
-      def write(args)
-        self.info(args)
-      end
-    end
-    class ErrorLog
-      attr :log
-      attr :log_level
-
-      def initialize(log_level = 'debug')
-        LL.debug "Initializing #{SiteHook.safe_log_name(self)}"
-        @log    = Logging.logger[SiteHook.safe_log_name(self)]
-        @log_level = log_level
-
-        flayout = Logging.appenders.rolling_file \
-          Pathname(Dir.home).join('.jph', 'logs', "#{SiteHook.safe_log_name(self)}-#{@log_level}.log").to_s,
-          :age     => 'daily',
-          :pattern => '[%d] %-5l %c: %m\n'
-        @log.add_appenders 'stdout', flayout
-        @log.level = log_level
-        LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
-      end
-      def write(args)
-        self.error(args)
-      end
     end
     class HookLog
       attr :log

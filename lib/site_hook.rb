@@ -12,15 +12,12 @@ module SiteHook
     @hooklog  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     @buildlog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
     @applog   = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
-    @errorlog = SiteHook::HookLogger::ErrorLog.new.log
 
     set port: 9090
     set bind: '127.0.0.1'
     set server: %w(thin)
     set quiet: true
     set raise_errors: true
-    set logger: @applog
-
     def Webhook.verified?(body, sig, secret, plaintext:)
       if plaintext
         if sig === secret
