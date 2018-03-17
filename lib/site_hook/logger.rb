@@ -142,12 +142,11 @@ module SiteHook
       end
       def info(message)
         case
-        when message =~ /Starting Git/
-
         when message =~ /git .* pull/
-          @info_output << "Pulling..."
+          @info_output << "Starting Git"
           @debug_output << message
-
+        else
+          @debug_output << message
         end
       end
       def debug(message)
@@ -158,7 +157,7 @@ module SiteHook
             msg.squish!
             case
             when msg =~ /From (.*?):(.*?)\/(.*)(\.git)?/
-              @debug_output << "Pulling via #{$2}/#{$3} on #{$1}."
+              @info_output << "Pulling via #{$2}/#{$3} on #{$1}."
             when msg =~ /\* branch (.*?) -> .*/
               @info_output << "Using #{$1} branch"
             end
