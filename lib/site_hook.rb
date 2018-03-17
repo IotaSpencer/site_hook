@@ -12,8 +12,7 @@ module SiteHook
     buildlog = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
     applog = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
     errorlog = SiteHook::HookLogger::ErrorLog.new.log
-    applog.sync = true
-    errorlog.sync = true
+
     set port: 9090
     set bind: '127.0.0.1'
     set server: %w(thin)
