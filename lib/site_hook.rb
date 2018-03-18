@@ -12,12 +12,17 @@ module SiteHook
     HOOKLOG  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
     APPLOG   = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
-
-    set port: 9090
+    JPHRC   = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
+    set port: JPHRC.fetch('port', 9090)
     set bind: '127.0.0.1'
     set server: %w(thin)
     set quiet: true
     set raise_errors: true
+
+    # @param [String] body JSON String of body
+    # @param [String] sig Signature or token from git service
+    # @param [String] secret User-defined verification token
+    # @param [Boolean] plaintext Whether the verification is plaintext
     def Webhook.verified?(body, sig, secret, plaintext:)
       if plaintext
         if sig === secret
@@ -43,8 +48,8 @@ module SiteHook
       request.body.rewind
       req_body = request.body.read
       js       = RecursiveOpenStruct.new(JSON.parse(req_body))
-      jph_rc   = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
-      projects = jph_rc['projects']
+
+      projects = JPHRC['projects']
       begin
         project = projects.fetch(params[:hook_name])
       rescue KeyError => e
@@ -72,23 +77,26 @@ module SiteHook
       end
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext)
         BUILDLOG.info 'Building...'
-        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], logger: BUILDLOG)
-        if jekyllbuild == 0
+        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
+        jekyll_status = jekyllbuild.fetch(:status, 1) == 0
+        case jekyll_status
+
+        when 0
           status 200
           headers 'Content-Type' => 'application/json'
           body {
             {'message': 'success'}.to_json
           }
-        else
-          status 404
+        when -1, -2, -3
+          status 400
           headers 'Content-Type' => 'application/json'
           body {
-            {'message': 'failure'}
+            {'message': 'exception', error: "#{jekyll_status.fetch(:message)}"}
           }
         end
 
       else
-        halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret'}.to_json
+        halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret', status: 1}.to_json
       end
     end
     post '/webhook/?' do
