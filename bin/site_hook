@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
 require 'thor'
 require 'site_hook'
-shook = SiteHook::CLI.new(ARGV)
-shook.invoke('start')
+SiteHook::CLI.start
