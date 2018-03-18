@@ -42,6 +42,6 @@ module SiteHook
     end
 
     desc 'config SUBCOMMAND [OPTIONS]', 'Configure site_hook options'
-    subcommand('config', ConfigClass)
+    subcommand('config', SiteHook::ConfigClass)
   end
 end

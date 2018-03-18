@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-require 'thor'
+
 require 'site_hook'
-SiteHook::CLI.start
+SiteHook::CLI.start(ARGV)
