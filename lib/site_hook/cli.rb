@@ -41,6 +41,7 @@ module SiteHook
       SiteHook::Webhook.run!
     end
 
+    desc 'config SUBCOMMAND [OPTIONS]', 'Configure site_hook options'
     subcommand(:config, ConfigClass)
   end
 end
