@@ -62,6 +62,8 @@ module SiteHook
   LL.debug "#{SiteHook.safe_log_name(LL.class)} initialized."
 
   class HookLogger
+
+    # Log App Actions
     class AppLog
       attr :log
       attr :log_level
@@ -80,6 +82,8 @@ module SiteHook
         LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
     end
+
+    # Log Hook Actions
     class HookLog
       attr :log
       attr :log_level
@@ -98,6 +102,7 @@ module SiteHook
       end
     end
 
+    # Log Build Actions
     class BuildLog
       attr :log
 
@@ -117,6 +122,7 @@ module SiteHook
       end
     end
 
+    # Log Git Actions
     class GitLog
       attr :log
 
@@ -134,12 +140,15 @@ module SiteHook
         LL.debug "Initialized #{SiteHook.safe_log_name(self)}"
       end
     end
+
+    # Fake Logger for GitLog to preprocess output
     class FakeLog < StringIO
       attr :info_output, :debug_output
       def initialize
         @info_output = []
         @debug_output = []
       end
+      # @param [Any] message message to log
       def info(message)
         case
         when message =~ /git .* pull/
@@ -149,6 +158,7 @@ module SiteHook
           @debug_output << message
         end
       end
+      # @param [Any] message message to log
       def debug(message)
         case
         when message =~ /\n/
@@ -167,6 +177,7 @@ module SiteHook
         end
       end
 
+      # @return [Hash] Hash of log entries
       def entries
         {
             info: @info_output,
