@@ -9,8 +9,8 @@ module SiteHook
 
     def list
       YML.each do |directive, hsh|
-        say directive
-        say hsh
+        STDOUT.puts directive
+        STDOUT.puts hsh
       end
     end
   end
