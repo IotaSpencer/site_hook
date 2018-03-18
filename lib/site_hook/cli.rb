@@ -1,5 +1,6 @@
 require 'thor'
 
+require 'site_hook/config_class'
 module SiteHook
   def self.log_levels
     default = {
