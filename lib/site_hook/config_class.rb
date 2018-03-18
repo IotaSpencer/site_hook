@@ -3,7 +3,7 @@ require 'yaml'
 require 'recursive-open-struct'
 module SiteHook
   class ConfigClass < Thor
-    YML = RecursiveOpenStruct.new(YAML.load_file(Pathname(Dir.home)))
+    YML = RecursiveOpenStruct.new(YAML.load_file(Pathname(Dir.home).join('.jph-rc')))
 
     def list(query = nil)
       case query
