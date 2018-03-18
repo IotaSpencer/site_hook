@@ -10,8 +10,8 @@ module SiteHook
       case query
       when '-a', 'all'
         YML.each do |directive, hsh|
-          puts directive
-          puts hsh
+          say directive
+          say hsh
         end
       end
     end
