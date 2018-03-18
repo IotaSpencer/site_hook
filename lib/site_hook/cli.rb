@@ -35,8 +35,11 @@ module SiteHook
     desc 'start', 'Start SiteHook'
 
     def start
-      SiteHook.mklogdir
+
+      SiteHook.mklogdir unless Pathname(Dir.home).join('.jph', 'logs').exist?
       SiteHook::Webhook.run!
     end
+
+    subcommand(:config, ConfigClass)
   end
 end
