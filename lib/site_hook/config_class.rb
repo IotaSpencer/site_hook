@@ -10,5 +10,28 @@ module SiteHook
     def list
       puts YML.read
     end
+
+    desc 'generate [options]', "Generate a example config file if one doesn't exist"
+    def generate
+      #return if Pathname(Dir.home).join('.jph-rc').exist?
+
+      yaml = [
+          "# fatal, error, warn, info, debug",
+          "log_levels:",
+          "  hook: info",
+          "  build: info",
+          "  git: info",
+          "  app: info",
+          "projects:",
+          "  PROJECT.NAME:  # Use the name you put as your webhook url",
+          "  # https://jekyllhook.example.com/webhook/PROJECT.NAME",
+          "    src: /path/to/jekyll/site/source  # Directory you 'git pull' into",
+          "    dst: /path/to/build/destination/  # The web root will be this folder",
+          "    hookpass: SOMERANDOMSTRING  # set your Gitlab-Token or GitHub secret to this",
+          "",
+      ]
+
+      puts yaml
+    end
   end
 end
