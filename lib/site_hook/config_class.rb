@@ -10,7 +10,7 @@ module SiteHook
     def list
       puts YML.read
     end
-    method_option '-f', type: :boolean, banner: 'FILE'
+    method_option '-f', type: :boolean, banner: 'FILE', default: false
     desc 'gen [options]', "Generate a example config file if one doesn't exist"
     def gen
       #return if Pathname(Dir.home).join('.jph-rc').exist?
