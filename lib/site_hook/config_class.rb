@@ -3,15 +3,12 @@ require 'yaml'
 require 'recursive-open-struct'
 module SiteHook
   class ConfigClass < Thor
-    YML = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
+    YML = open(Pathname(Dir.home).join('.jph-rc'), 'r')
 
     desc 'list QUERY [options]', 'List configured options'
 
     def list
-      YML.each do |directive, hsh|
-        STDOUT.puts directive
-        STDOUT.puts hsh
-      end
+      puts YML.read
     end
   end
 end
