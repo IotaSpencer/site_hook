@@ -8,6 +8,20 @@ require 'json'
 require 'yaml'
 
 module SiteHook
+  module Gem
+    class Info
+      def self.name
+        'site_hook'
+      end
+      def self.constant_name
+        'SiteHook'
+      end
+      def self.author
+        %q(Ken Spencer <me@iotaspencer.me>)
+      end
+    end
+  end
+
   class Webhook < Sinatra::Base
     HOOKLOG  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
