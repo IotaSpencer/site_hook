@@ -4,6 +4,7 @@ require 'site_hook/logger'
 require 'recursive-open-struct'
 require 'site_hook/cli'
 require 'sinatra'
+require 'haml'
 require 'json'
 require 'yaml'
 
@@ -56,7 +57,13 @@ module SiteHook
       halt 403, {'Content-Type' => 'text/html'}, "<h1>See <a href=\"/webhooks/\">here</a> for the active webhooks</h1>"
     end
 
-    get '/webhooks'
+    get '/webhooks.json', provides: :json do
+
+    end
+
+    get '/webhooks/?' do
+      haml :webhooks
+    end
 
     get '/webhook/?' do
       halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
