@@ -39,8 +39,11 @@ module SiteHook
     end
 
     get '/' do
-      halt 403, {'Content-Type' => 'application/json'}, {message: 'no permission'}.to_json
+      halt 403, {'Content-Type' => 'text/html'}, "<h1>See <a href=\"/webhooks/\">here</a> for the active webhooks</h1>"
     end
+
+    get '/webhooks'
+
     get '/webhook/?' do
       halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
     end
