@@ -63,13 +63,18 @@ module SiteHook
     end
 
     get '/webhooks/?' do
-      haml :webhooks
+      haml :webhooks, locals: {'projects' => JPHRC['projects']}
     end
 
-    get '/webhook/?' do
-      halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
+    get '/webhook/*' do
+      if params[:splat]
+        pass
+      else
+        halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
+      end
+
     end
-    post '/webhook/:hook_name' do
+    post '/webhook/:hook_name/?' do
       request.body.rewind
       req_body = request.body.read
       js       = RecursiveOpenStruct.new(JSON.parse(req_body))
