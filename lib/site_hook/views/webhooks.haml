@@ -1,3 +1,3 @@
 #webhook-list.list-group
   - projects.each do |name, hsh|
-    %a{href: "https://#{hsh['host']}/#{hsh['repo']}"} #{name}
+    %a{id: "#{hsh['repo'].sub!(/\./, '-').sub!(/\//, '-')}", class: "list-group-item",href: "https://#{hsh['host']}/#{hsh['repo']}"} #{name}
