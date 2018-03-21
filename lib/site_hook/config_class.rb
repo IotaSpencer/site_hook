@@ -27,10 +27,12 @@ module SiteHook
           "projects:",
           "  PROJECT.NAME:  # Use the name you put as your webhook url",
           "  # https://jekyllhook.example.com/webhook/PROJECT.NAME",
-          "    src: /path/to/jekyll/site/source  # Directory you 'git pull' into",
-          "    dst: /path/to/build/destination/  # The web root will be this folder",
-          "    hookpass: SOMERANDOMSTRING        # set your Gitlab-Token or GitHub secret to this",
-          "    private: true/false               # If the project is hidden from the public list of webhooks",
+          "    src: /path/2/site/source   # Directory you 'git pull' into",
+          "    dst: /path/2/destination/  # The web root will be this folder",
+          "    host: git*.com             # The git service you're using for vcs",
+          "    repo: USER/REPO            # The repo path on the git service",
+          "    hookpass: SOMERANDOMSTRING # Gitlab-Token or GitHub secret, etc.",
+          "    private: true/false        # hidden from the public list",
           "",
       ]
       if options[:file]
