@@ -15,8 +15,6 @@ module SiteHook
     method_option :file, type: :boolean, banner: 'FILE', default: false, aliases: %w(-f)
     desc 'gen [options]', "Generate a example config file if one doesn't exist"
     def gen
-      #return if Pathname(Dir.home).join('.jph-rc').exist?
-
       yaml = [
           "# fatal, error, warn, info, debug",
           "log_levels:",
