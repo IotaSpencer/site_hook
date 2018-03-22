@@ -35,6 +35,7 @@ module SiteHook
     set quiet: true
     set raise_errors: true
     set views: Pathname(app_file).dirname.join('site_hook', 'views')
+    set public_folder: Pathname(app_file).dirname.join('site_hook', 'public')
 
     # @param [String] body JSON String of body
     # @param [String] sig Signature or token from git service
