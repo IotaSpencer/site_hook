@@ -71,7 +71,7 @@ module SiteHook
         result[project].merge!(hsh)
       end
       headers 'Content-Type' => 'application/json', 'Accept' => 'application/json'
-      json result
+      json result, layout: false
 
     end
 
