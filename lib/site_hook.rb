@@ -59,8 +59,8 @@ module SiteHook
     end
 
     get '/webhooks.json', provides: :json do
-      public_projects = JPHRC['projects'].select do |project|
-        project.fetch('private', nil) == false or project.fetch('private', nil).nil?
+      public_projects = JPHRC['projects'].select do |project, hsh|
+        hsh.fetch('private', nil) == false or hsh.fetch('private', nil).nil?
       end
       json public_projects
 
