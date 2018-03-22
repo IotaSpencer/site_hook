@@ -69,7 +69,7 @@ module SiteHook
         hsh.delete('hookpass')
         result[project].merge!(hsh)
       end
-      headers {'Content-Type' => 'application/json'}
+      headers 'Content-Type' => 'application/json'
       json result
 
     end
