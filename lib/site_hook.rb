@@ -27,7 +27,7 @@ module SiteHook
     set :views, Pathname(app_file).dirname.join('site_hook', 'static', 'sass').to_s
     get '/css/*.css' do
       filename = params[:splat].first
-      scss filename.to_sym
+      sass filename.to_sym
     end
   end
   class CoffeeHandler < Sinatra::Base
