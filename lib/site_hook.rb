@@ -60,6 +60,7 @@ module SiteHook
     end
 
     get '/webhooks.json', provides: :json do
+      content_type 'application/json'
       public_projects = JPHRC['projects'].select do |project, hsh|
         hsh.fetch('private', nil) == false or hsh.fetch('private', nil).nil?
       end
@@ -100,7 +101,6 @@ module SiteHook
       plaintext = false
       signature = nil
       event     = request.env.fetch('HTTP_X_GITLAB_EVENT', nil) || request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
-      APPLOG.info event.inspect
       if event != 'push'
         if event.nil?
           halt 400, {'Content-Type' => 'application/json'}, {message: 'no event header'}.to_json
