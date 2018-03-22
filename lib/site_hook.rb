@@ -63,7 +63,13 @@ module SiteHook
       public_projects = JPHRC['projects'].select do |project, hsh|
         hsh.fetch('private', nil) == false or hsh.fetch('private', nil).nil?
       end
-      json public_projects
+      result = {}
+      public_projects.each do |project, hsh|
+        result[project] = {}
+        hsh.delete!('hookpass')
+        result[project].merge!(hsh)
+      end
+      json result
 
     end
 
