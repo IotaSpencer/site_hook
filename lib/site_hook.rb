@@ -66,7 +66,7 @@ module SiteHook
       result = {}
       public_projects.each do |project, hsh|
         result[project] = {}
-        hsh.delete!('hookpass')
+        hsh.delete('hookpass')
         result[project].merge!(hsh)
       end
       json result
