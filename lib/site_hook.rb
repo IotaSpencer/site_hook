@@ -6,6 +6,7 @@ require 'site_hook/cli'
 require 'sinatra'
 require 'haml'
 require 'json'
+require 'sinatra/json'
 require 'yaml'
 
 module SiteHook
