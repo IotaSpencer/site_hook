@@ -1,4 +1,6 @@
 #webhook-list.list-group
   - projects.each do |name, hsh|
     - if hsh.fetch('private', nil).nil? or hsh.fetch('private', nil)
-      %a{id: "#{hsh['repo'].sub!(/\./, '-').sub!(/\//, '-')}", class: "list-group-item",href: "https://#{hsh['host']}/#{hsh['repo']}"} #{name}
+      %a{id: "#{hsh['repo'].sub!(/\./, '-').sub!(/\//, '-')}", class: "list-group-item",href: "https://#{hsh['host']}/#{hsh['repo']}"}
+        #{name}
+        %span{class: "badge badge-pill badge-dark"} https://#{hsh['host']}/#{hsh['repo']}
