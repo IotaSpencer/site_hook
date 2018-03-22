@@ -23,7 +23,20 @@ module SiteHook
       end
     end
   end
-
+  class SassHandler < Sinatra::Base
+    set :views, Funcs.main_dir + 'static/sass'
+    get '/css/*.css' do
+      filename = params[:splat].first
+      sass filename.to_sym
+    end
+  end
+  class CoffeeHandler < Sinatra::Base
+    set :views, Funcs.main_dir + 'static/coffee'
+    get '/js/*.js' do
+      filename = params[:splat].first
+      coffee filename.to_sym
+    end
+  end
   class Webhook < Sinatra::Base
     HOOKLOG  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
