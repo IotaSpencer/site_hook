@@ -126,9 +126,10 @@ module SiteHook
         signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
         plaintext = true
       when request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
-
         signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', '').sub!(/^sha1=/, '')
         plaintext = false
+
+        when request.env.fetch('HTTP_X_GOGS_EVENT', nil)
       else
         APPLOG.debug(request.env.inspect)
       end
