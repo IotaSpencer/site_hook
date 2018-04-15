@@ -129,7 +129,13 @@ module SiteHook
         signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', '').sub!(/^sha1=/, '')
         plaintext = false
 
-        when request.env.fetch('HTTP_X_GOGS_EVENT', nil)
+      when request.env.fetch('HTTP_X_GOGS_EVENT', nil)
+        APPLOG.debug(request.env.inspect)
+        status 404
+        headers 'Content-Type' => 'application/json'
+        body {
+          {'message': 'failure', 'error': 'gogs not implemented'}
+        }
       else
         APPLOG.debug(request.env.inspect)
       end
