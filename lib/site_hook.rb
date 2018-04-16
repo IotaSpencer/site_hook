@@ -198,7 +198,8 @@ module SiteHook
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
         BUILDLOG.info 'Building...'
         jekyllbuild   = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
-        jekyll_status = jekyllbuild.fetch(:status, 1) == 0
+        jekyll_status = jekyllbuild.fetch(:status, 1)
+        puts jekyll_status
         case jekyll_status
 
         when 0
