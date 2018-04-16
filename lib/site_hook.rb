@@ -9,6 +9,7 @@ require 'sass'
 require 'json'
 require 'sinatra/json'
 require 'yaml'
+require 'open_ssl'
 
 module SiteHook
   module Gem
@@ -58,7 +59,7 @@ module SiteHook
     # @param [String] sig Signature or token from git service
     # @param [String] secret User-defined verification token
     # @param [Boolean] plaintext Whether the verification is plaintext
-    def Webhook.verified?(body, sig, secret, plaintext:)
+    def Webhook.verified?(body, sig, secret, plaintext:, service:)
       if plaintext
         if sig === secret
           true
@@ -66,10 +67,19 @@ module SiteHook
           false
         end
       else
-        if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
-          APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
-          true
+        case service
+        when 'gogs'
+          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
+            APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
+            true
+          end
+        when 'github'
+          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
+            APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
+            true
+          end
         end
+
       end
     end
 
@@ -160,7 +170,7 @@ module SiteHook
         halt 400,
              {'Content-Type' => 'application/json'},
              {
-                 'status': 'failure',
+                 'status':  'failure',
                  'message': 'something weird happened'
              }
       end
