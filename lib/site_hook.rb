@@ -16,9 +16,11 @@ module SiteHook
       def self.name
         'site_hook'
       end
+
       def self.constant_name
         'SiteHook'
       end
+
       def self.author
         %q(Ken Spencer <me@iotaspencer.me>)
       end
@@ -42,7 +44,7 @@ module SiteHook
     HOOKLOG  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
     APPLOG   = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
-    JPHRC   = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
+    JPHRC    = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
     set port: JPHRC.fetch('port', 9090)
     set bind: '127.0.0.1'
     set server: %w(thin)
@@ -80,7 +82,7 @@ module SiteHook
       public_projects = JPHRC['projects'].select do |project, hsh|
         hsh.fetch('private', nil) == false or hsh.fetch('private', nil).nil?
       end
-      result = {}
+      result          = {}
       public_projects.each do |project, hsh|
         result[project] = {}
         hsh.delete('hookpass')
@@ -104,6 +106,7 @@ module SiteHook
 
     end
     post '/webhook/:hook_name/?' do
+      service = nil
       request.body.rewind
       req_body = request.body.read
       js       = RecursiveOpenStruct.new(JSON.parse(req_body))
@@ -116,8 +119,8 @@ module SiteHook
       end
       plaintext = false
       signature = nil
-      event = nil
-      github = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
+      event     = nil
+      github    = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
       unless github.nil?
         if github == 'push'
           event = 'push'
@@ -136,20 +139,50 @@ module SiteHook
 
         end
       end
+      events     = {
+          'github' => github,
+          'gitlab' => gitlab,
+          'gogs'   => gogs
+      }
+      events_m_e = events.values.one?
+      case events_m_e
+      when true
+        event   = 'push'
+        service = events.select { |key, value| value }
+      when false
+        halt 400, {'Content-Type' => 'application/json'},
+             {
+                 message: 'events are mutually exclusive',
+                 status:  'failure'
+             }.to_json
+
+      else
+        halt 400,
+             {'Content-Type' => 'application/json'},
+             {
+                 'status': 'failure',
+                 'message': 'something weird happened'
+             }
+      end
       if event != 'push'
         if event.nil?
           halt 400, {'Content-Type' => 'application/json'}, {message: 'no event header'}.to_json
         end
       end
-      case
-      when request.env.fetch('HTTP_X_GITLAB_EVENT', nil)
+      case service
+      when 'gitlab'
         signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
         plaintext = true
-      when request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
-        signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', '').sub!(/^sha1=/, '')
+      when 'github'
+        signature = request.env.fetch(
+            'HTTP_X_HUB_SIGNATURE',
+            ''
+        ).sub!(
+            /^sha1=/, ''
+        )
         plaintext = false
 
-      when request.env.fetch('HTTP_X_GOGS_EVENT', nil)
+      when 'gogs'
         signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
         plaintext = false
       else
@@ -157,7 +190,7 @@ module SiteHook
       end
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext)
         BUILDLOG.info 'Building...'
-        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
+        jekyllbuild   = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
         jekyll_status = jekyllbuild.fetch(:status, 1) == 0
         case jekyll_status
 
