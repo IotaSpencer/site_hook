@@ -116,7 +116,26 @@ module SiteHook
       end
       plaintext = false
       signature = nil
-      event     = request.env.fetch('HTTP_X_GITLAB_EVENT', nil) || request.env.fetch('HTTP_X_GITHUB_EVENT', nil) || request.env.fetch('HTTP_X_GOGS_EVENT')
+      event = nil
+      github = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
+      unless github.nil?
+        if github == 'push'
+          event = 'push'
+        end
+      end
+      gitlab = request.env.fetch('HTTP_X_GITLAB_EVENT', nil)
+      unless gitlab.nil?
+        if gitlab == 'push'
+          event = 'push'
+        end
+      end
+      gogs = request.env.fetch('HTTP_X_GOGS_EVENT', nil)
+      unless gogs.nil?
+        if gogs == 'push'
+          event = 'push'
+
+        end
+      end
       if event != 'push'
         if event.nil?
           halt 400, {'Content-Type' => 'application/json'}, {message: 'no event header'}.to_json
