@@ -80,7 +80,7 @@ module SiteHook
         @log           = logger
         instance       = self::Build.new
         meths          = instance.methods.select { |x| x =~ /^do_/ }
-        @thrs = nil
+        @thrs = []
         begin
           @thrs << Thread.new do
             meths.each do |m|
