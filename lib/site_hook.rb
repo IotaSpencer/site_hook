@@ -157,8 +157,7 @@ module SiteHook
       case events_m_e
       when true
         event   = 'push'
-        service = events.select { |key, value| value }
-        puts service.keys.first
+        service = events.select { |key, value| value }.keys.first
       when false
         halt 400, {'Content-Type' => 'application/json'},
              {
