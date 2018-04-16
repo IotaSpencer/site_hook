@@ -51,6 +51,7 @@ module SiteHook
     set views: Pathname(app_file).dirname.join('site_hook', 'views')
     set :public_folder, Pathname(app_file).dirname.join('site_hook', 'static')
     use SassHandler
+    use CoffeeHandler
     # @param [String] body JSON String of body
     # @param [String] sig Signature or token from git service
     # @param [String] secret User-defined verification token
@@ -115,7 +116,7 @@ module SiteHook
       end
       plaintext = false
       signature = nil
-      event     = request.env.fetch('HTTP_X_GITLAB_EVENT', nil) || request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
+      event     = request.env.fetch('HTTP_X_GITLAB_EVENT', nil) || request.env.fetch('HTTP_X_GITHUB_EVENT', nil) || request.env.fetch('HTTP_X_GOGS_EVENT')
       if event != 'push'
         if event.nil?
           halt 400, {'Content-Type' => 'application/json'}, {message: 'no event header'}.to_json
@@ -130,12 +131,8 @@ module SiteHook
         plaintext = false
 
       when request.env.fetch('HTTP_X_GOGS_EVENT', nil)
-        APPLOG.debug(request.env.inspect)
-        status 404
-        headers 'Content-Type' => 'application/json'
-        body {
-          {'message': 'failure', 'error': 'gogs not implemented'}
-        }
+        signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
+        plaintext = false
       else
         APPLOG.debug(request.env.inspect)
       end
