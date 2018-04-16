@@ -9,7 +9,6 @@ require 'sass'
 require 'json'
 require 'sinatra/json'
 require 'yaml'
-require 'open_ssl'
 
 module SiteHook
   module Gem
