@@ -80,11 +80,15 @@ module SiteHook
         @log           = logger
         instance       = self::Build.new
         meths          = instance.methods.select { |x| x =~ /^do_/ }
+        @thrs = nil
         begin
-          meths.each do |m|
-            @log.debug("Running #{m}")
-            instance.method(m).call
-            @log.debug("Ran #{m}")
+          @thrs << Thread.new do
+            meths.each do |m|
+              @log.debug("Running #{m}")
+              instance.method(m).call
+              @log.debug("Ran #{m}")
+            end
+            Thread.exit
           end
           return {message: 'success', status: 0}
         rescue TypeError => e
