@@ -158,6 +158,7 @@ module SiteHook
       when true
         event   = 'push'
         service = events.select { |key, value| value }
+        puts service
       when false
         halt 400, {'Content-Type' => 'application/json'},
              {
@@ -194,8 +195,6 @@ module SiteHook
       when 'gogs'
         signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
         plaintext = false
-      else
-        APPLOG.debug(request.env.inspect)
       end
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
         BUILDLOG.info 'Building...'
