@@ -9,7 +9,6 @@ require 'sass'
 require 'json'
 require 'sinatra/json'
 require 'yaml'
-
 module SiteHook
   module Gem
     class Info
@@ -41,10 +40,10 @@ module SiteHook
     end
   end
   class Webhook < Sinatra::Base
-    HOOKLOG  = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
+    HOOKLOG = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
-    APPLOG   = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
-    JPHRC    = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
+    APPLOG = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
+    JPHRC = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
     set port: JPHRC.fetch('port', 9090)
     set bind: '127.0.0.1'
     set server: %w(thin)
@@ -58,28 +57,25 @@ module SiteHook
     # @param [String] sig Signature or token from git service
     # @param [String] secret User-defined verification token
     # @param [Boolean] plaintext Whether the verification is plaintext
-    def Webhook.verified?(body, sig, secret, plaintext:, service:)
-      if plaintext
-        if sig === secret
-          true
-        else
-          false
-        end
-      else
-        case service
-        when 'gogs'
-          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
-            APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
-            true
-          end
-        when 'github'
-          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
-            APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
-            true
-          end
-        end
-
+    def Webhook.verified?(body, sig, secret, plaintext:, service:) if plaintext
+      if sig === secret
+        true
+      else false
       end
+    else case service
+      when 'gogs'
+        if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
+          APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
+          true
+        end
+      when 'github'
+        if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
+          APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
+          true
+        end
+    end
+
+    end
     end
 
     get '/' do
@@ -91,7 +87,7 @@ module SiteHook
       public_projects = JPHRC['projects'].select do |project, hsh|
         hsh.fetch('private', nil) == false or hsh.fetch('private', nil).nil?
       end
-      result          = {}
+      result = {}
       public_projects.each do |project, hsh|
         result[project] = {}
         hsh.delete('hookpass')
@@ -109,8 +105,7 @@ module SiteHook
     get '/webhook/*' do
       if params[:splat]
         pass
-      else
-        halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
+      else halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
       end
 
     end
@@ -118,7 +113,7 @@ module SiteHook
       service = nil
       request.body.rewind
       req_body = request.body.read
-      js       = RecursiveOpenStruct.new(JSON.parse(req_body))
+      js = RecursiveOpenStruct.new(JSON.parse(req_body))
 
       projects = JPHRC['projects']
       begin
@@ -128,8 +123,8 @@ module SiteHook
       end
       plaintext = false
       signature = nil
-      event     = nil
-      github    = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
+      event = nil
+      github = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
       unless github.nil?
         if github == 'push'
           event = 'push'
@@ -148,30 +143,19 @@ module SiteHook
 
         end
       end
-      events     = {
-          'github' => github,
-          'gitlab' => gitlab,
-          'gogs'   => gogs
+      events = {'github' => github, 'gitlab' => gitlab, 'gogs' => gogs
       }
       events_m_e = events.values.one?
       case events_m_e
-      when true
-        event   = 'push'
-        service = events.select { |key, value| value }.keys.first
-      when false
-        halt 400, {'Content-Type' => 'application/json'},
-             {
-                 message: 'events are mutually exclusive',
-                 status:  'failure'
-             }.to_json
+        when true
+          event = 'push'
+          service = events.select { |key, value| value }.keys.first
+        when false
+          halt 400, {'Content-Type' => 'application/json'}, {message: 'events are mutually exclusive', status: 'failure'
+          }.to_json
 
-      else
-        halt 400,
-             {'Content-Type' => 'application/json'},
-             {
-                 'status':  'failure',
-                 'message': 'something weird happened'
-             }
+        else halt 400, {'Content-Type' => 'application/json'}, {'status': 'failure', 'message': 'something weird happened'
+        }
       end
       if event != 'push'
         if event.nil?
@@ -179,50 +163,44 @@ module SiteHook
         end
       end
       case service
-      when 'gitlab'
-        signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
-        plaintext = true
-      when 'github'
-        signature = request.env.fetch(
-            'HTTP_X_HUB_SIGNATURE',
-            ''
-        ).sub!(
-            /^sha1=/, ''
-        )
-        plaintext = false
+        when 'gitlab'
+          signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
+          plaintext = true
+        when 'github'
+          signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', ''
+          ).sub!(/^sha1=/, ''
+          )
+          plaintext = false
 
-      when 'gogs'
-        signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
-        plaintext = false
+        when 'gogs'
+          signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
+          plaintext = false
       end
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
         BUILDLOG.info 'Building...'
 
-        jekyllbuild   = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
+        jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
         jekyll_status = jekyllbuild.fetch(:status, 1)
-        puts jekyll_status
         case jekyll_status
 
-        when 0
-          status 200
-          headers 'Content-Type' => 'application/json'
-          body {
-            {'message': 'success'}.to_json
-          }
-        when -1, -2, -3
-          status 400
-          headers 'Content-Type' => 'application/json'
-          body {
-            {'message': 'exception', error: "#{jekyll_status.fetch(:message)}"}
-          }
+          when 0
+            status 200
+            headers 'Content-Type' => 'application/json'
+            body { {'status': 'success'}.to_json
+            }
+          when -1, -2, -3
+            status 400
+            headers 'Content-Type' => 'application/json'
+            body { {'status': 'exception', error: "#{jekyll_status.fetch(:message)}"}
+            }
         end
 
-      else
-        halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret', status: 1}.to_json
+      else halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret', 'status': 'failure'}.to_json
       end
     end
     post '/webhook/?' do
-      halt 403, {'Content-Type' => 'application/json'}, {message: 'pick a hook', error: 'root webhook hit'}.to_json
+      halt 403, {'Content-Type' => 'application/json'}, {message: 'pick a hook', error: 'root webhook hit', 'status': 'failure'
+      }.to_json
     end
   end
 end
