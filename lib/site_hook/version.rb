@@ -1,3 +1,3 @@
 module SiteHook
-  VERSION = "0.5.1"
+  VERSION = "0.6.0"
 end
