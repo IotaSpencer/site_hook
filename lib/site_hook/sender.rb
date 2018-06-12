@@ -11,7 +11,7 @@ module SiteHook
 
         def do_grab_version
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          log           = Jekyll.instance_variable_get('@log')
+          log = Jekyll.instance_variable_get('@log')
           begin
             stdout_str, status = Open3.capture2({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "jekyll --version --source #{jekyll_source}")
             log.info("Jekyll Version: #{stdout_str.chomp!}")
@@ -22,11 +22,11 @@ module SiteHook
         end
 
         def do_pull
-          fakelog       = SiteHook::HookLogger::FakeLog.new
-          reallog       = SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log
+          fakelog = SiteHook::HookLogger::FakeLog.new
+          reallog = SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          build_dest    = Jekyll.instance_variable_get('@build_dest')
-          g             = Git.open(jekyll_source, :log => fakelog)
+          build_dest = Jekyll.instance_variable_get('@build_dest')
+          g = Git.open(jekyll_source, :log => fakelog)
           g.pull
           fakelog.entries.each do |level, entries|
             entries.each { |entry| reallog.send("#{level}", entry) }
@@ -35,8 +35,8 @@ module SiteHook
 
         def do_build
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          build_dest    = Jekyll.instance_variable_get('@build_dest')
-          log           = Jekyll.instance_variable_get('@log')
+          build_dest = Jekyll.instance_variable_get('@build_dest')
+          log = Jekyll.instance_variable_get('@log')
           Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).realdirpath.to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
             pid = thr.pid
 
@@ -76,19 +76,15 @@ module SiteHook
       # @param [BuildLog] logger Build Logger Instance
       def self.build(jekyll_source, build_dest, logger)
         @jekyll_source = jekyll_source
-        @build_dest    = build_dest
-        @log           = logger
-        instance       = self::Build.new
-        meths          = instance.methods.select { |x| x =~ /^do_/ }
-        @thrs = []
+        @build_dest = build_dest
+        @log = logger
+        instance = self::Build.new
+        meths = instance.methods.select { |x| x =~ /^do_/ }
         begin
-          @thrs << Thread.new do
-            meths.each do |m|
-              @log.debug("Running #{m}")
-              instance.method(m).call
-              @log.debug("Ran #{m}")
-            end
-            Thread.exit
+          meths.each do |m|
+            @log.debug("Running #{m}")
+            instance.method(m).call
+            @log.debug("Ran #{m}")
           end
           return {message: 'success', status: 0}
         rescue TypeError => e
@@ -97,9 +93,7 @@ module SiteHook
           return {message: "#{e}", status: -2}
         rescue ArgumentError => e
           return {message: "#{e}", status: -3}
-
         end
-
       end
     end
   end
