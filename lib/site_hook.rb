@@ -57,25 +57,28 @@ module SiteHook
     # @param [String] sig Signature or token from git service
     # @param [String] secret User-defined verification token
     # @param [Boolean] plaintext Whether the verification is plaintext
-    def Webhook.verified?(body, sig, secret, plaintext:, service:) if plaintext
-      if sig === secret
-        true
-      else false
-      end
-    else case service
-      when 'gogs'
-        if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
-          APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
+    def Webhook.verified?(body, sig, secret, plaintext:, service:)
+      if plaintext
+        if sig === secret
           true
+        else
+          false
         end
-      when 'github'
-        if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
-          APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
-          true
+      else
+        case service
+        when 'gogs'
+          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
+            APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
+            true
+          end
+        when 'github'
+          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
+            APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
+            true
+          end
         end
-    end
 
-    end
+      end
     end
 
     get '/' do
@@ -105,7 +108,8 @@ module SiteHook
     get '/webhook/*' do
       if params[:splat]
         pass
-      else halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
+      else
+        halt 405, {'Content-Type' => 'application/json'}, {message: 'GET not allowed'}.to_json
       end
 
     end
@@ -147,14 +151,15 @@ module SiteHook
       }
       events_m_e = events.values.one?
       case events_m_e
-        when true
-          event = 'push'
-          service = events.select { |key, value| value }.keys.first
-        when false
-          halt 400, {'Content-Type' => 'application/json'}, {message: 'events are mutually exclusive', status: 'failure'
-          }.to_json
+      when true
+        event = 'push'
+        service = events.select { |key, value| value }.keys.first
+      when false
+        halt 400, {'Content-Type' => 'application/json'}, {message: 'events are mutually exclusive', status: 'failure'
+        }.to_json
 
-        else halt 400, {'Content-Type' => 'application/json'}, {'status': 'failure', 'message': 'something weird happened'
+      else
+        halt 400, {'Content-Type' => 'application/json'}, {'status': 'failure', 'message': 'something weird happened'
         }
       end
       if event != 'push'
@@ -163,18 +168,18 @@ module SiteHook
         end
       end
       case service
-        when 'gitlab'
-          signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
-          plaintext = true
-        when 'github'
-          signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', ''
-          ).sub!(/^sha1=/, ''
-          )
-          plaintext = false
+      when 'gitlab'
+        signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
+        plaintext = true
+      when 'github'
+        signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', ''
+        ).sub!(/^sha1=/, ''
+        )
+        plaintext = false
 
-        when 'gogs'
-          signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
-          plaintext = false
+      when 'gogs'
+        signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
+        plaintext = false
       end
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
         BUILDLOG.info 'Building...'
@@ -183,19 +188,20 @@ module SiteHook
         jekyll_status = jekyllbuild.fetch(:status, 1)
         case jekyll_status
 
-          when 0
-            status 200
-            headers 'Content-Type' => 'application/json'
-            body { {'status': 'success'}.to_json
-            }
-          when -1, -2, -3
-            status 400
-            headers 'Content-Type' => 'application/json'
-            body { {'status': 'exception', error: "#{jekyll_status.fetch(:message)}"}
-            }
+        when 0
+          status 200
+          headers 'Content-Type' => 'application/json'
+          body { {'status': 'success'}.to_json
+          }
+        when -1, -2, -3
+          status 400
+          headers 'Content-Type' => 'application/json'
+          body { {'status': 'exception', error: "#{jekyll_status.fetch(:message)}"}
+          }
         end
 
-      else halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret', 'status': 'failure'}.to_json
+      else
+        halt 403, {'Content-Type' => 'application/json'}, {message: 'incorrect secret', 'status': 'failure'}.to_json
       end
     end
     post '/webhook/?' do
