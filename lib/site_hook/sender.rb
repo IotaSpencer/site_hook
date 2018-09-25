@@ -26,7 +26,7 @@ module SiteHook
           reallog = SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           build_dest = Jekyll.instance_variable_get('@build_dest')
-          g = Git.open(jekyll_source, :log => fakelog)
+          g = Git.open(jekyll_source, log: fakelog)
           g.pull
           fakelog.entries.each do |level, entries|
             entries.each { |entry| reallog.send("#{level}", entry) }
@@ -49,7 +49,8 @@ module SiteHook
               # Destination: /var/www/iotaspencer.me
               # Incremental build: disabled. Enable with --incremental
               # Generating...
-              # GitHub Metadata: No GitHub API authentication could be found. Some fields may be missing or have incorrect data.
+              # GitHub Metadata: No GitHub API authentication could be found.
+              # Some fields may be missing or have incorrect data.
               # done in 6.847 seconds.
               # Auto-regeneration: disabled. Use --watch to enable.
               case
