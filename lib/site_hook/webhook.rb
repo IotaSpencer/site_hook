@@ -147,7 +147,7 @@ module SiteHook
         BUILDLOG.info 'Building...'
 
         jekyllbuild = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], BUILDLOG)
-        jekyll_status = jekyllbuild.fetch(:status, 1)
+        jekyll_status = jekyllbuild
         case jekyll_status
 
         when 0
