@@ -33,7 +33,7 @@ module SiteHook
         '    private: true/false        # hidden from the public list',
         ''
       ]
-      jphrc = SiteHook::Gem::Paths.config
+      jphrc = SiteHook::Paths.config
       if jphrc.exist?
         puts "#{jphrc} exists. Will not overwrite."
       else

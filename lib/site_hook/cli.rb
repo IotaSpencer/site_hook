@@ -1,26 +1,7 @@
 require 'thor'
-
 require 'site_hook/config_class'
+require 'site_hook/server_class'
 module SiteHook
-  def self.log_levels
-    default = {
-      'hook' => 'info',
-      'build' => 'info',
-      'git' => 'info',
-      'app' => 'info'
-    }
-    begin
-      log_level = YAML.load_file(Pathname(Dir.home).join('.jph-rc')).fetch('log_levels')
-      if log_level
-        log_level
-      end
-    rescue KeyError
-      default
-    rescue Errno::ENOENT
-      default
-    end
-  end
-
   class CLI < Thor
     map %w[--version -v] => :__print_version
     desc '--version, -v', 'Print the version'
@@ -39,15 +20,11 @@ module SiteHook
       say "Gem Author: #{SiteHook::Gem::Info.author}"
       say "Gem Version: v#{SiteHook::VERSION}"
     end
-
-    method_option(:log_levels, type: :hash, banner: 'LEVELS', default: SiteHook.log_levels)
-    desc 'start', 'Start SiteHook'
-    def start
-
-      SiteHook.mklogdir unless SiteHook::Gem::Paths.logs.exist?
-      SiteHook::Webhook.run!
-    end
     desc 'config SUBCOMMAND [OPTIONS]', 'Configure site_hook options'
     subcommand('config', SiteHook::ConfigClass)
+    desc 'server SUBCOMMAND [OPTIONS]', 'Start the server'
+    subcommand('server', SiteHook::ServerClass)
+
+
   end
 end
