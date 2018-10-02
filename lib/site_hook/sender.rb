@@ -3,6 +3,8 @@ require 'site_hook/logger'
 require 'git'
 require 'paint'
 module SiteHook
+  autoload :Logs, 'site_hook/log'
+
   module Senders
     class Jekyll
       attr :jekyll_source, :build_dest
@@ -23,7 +25,7 @@ module SiteHook
 
         def do_pull
           fakelog = SiteHook::HookLogger::FakeLog.new
-          reallog = SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log
+          reallog = SiteHook::HookLogger::GitLog.new(SiteHook::Logs.log_levels['git']).log
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
           # build_dest = Jekyll.instance_variable_get('@build_dest')
           g = Git.open(jekyll_source, log: fakelog)
