@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
     spec.metadata['source_uri'] = 'https://github.com/IotaSpencer/site_hook'
+    spec.metadata['tutorial'] = 'https://iotaspencer.me/projects/site_hook/'
   end
 
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
@@ -27,11 +28,11 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'activesupport', '~> 5.1'
   spec.add_runtime_dependency 'git', '~> 1.3'
   spec.add_runtime_dependency 'haml', '~> 5.0'
-  spec.add_runtime_dependency 'highline', '~> 2.0.0'
+  spec.add_runtime_dependency 'highline', '~> 2.0', '>= 2.0.0'
   spec.add_runtime_dependency 'logging', '~> 2.2'
   spec.add_runtime_dependency 'paint', '~> 2.0'
-  spec.add_runtime_dependency 'random_password', '~> 0.1.1'
   spec.add_runtime_dependency 'pry', '~> 0.11'
+  spec.add_runtime_dependency 'random_password', '~> 0.1.1'
   spec.add_runtime_dependency 'recursive-open-struct', '~> 1.1'
   spec.add_runtime_dependency 'sass', '~> 3.5'
   spec.add_runtime_dependency 'sinatra', '~> 2.0', '>= 2.0.2'
@@ -41,5 +42,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-
 end

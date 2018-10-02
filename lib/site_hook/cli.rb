@@ -41,15 +41,12 @@ module SiteHook
     end
 
     method_option(:log_levels, type: :hash, banner: 'LEVELS', default: SiteHook.log_levels)
-
     desc 'start', 'Start SiteHook'
-
     def start
 
-      SiteHook.mklogdir unless Pathname(Dir.home).join('.jph', 'logs').exist?
+      SiteHook.mklogdir unless SiteHook::Gem::Paths.logs.exist?
       SiteHook::Webhook.run!
     end
-
     desc 'config SUBCOMMAND [OPTIONS]', 'Configure site_hook options'
     subcommand('config', SiteHook::ConfigClass)
   end

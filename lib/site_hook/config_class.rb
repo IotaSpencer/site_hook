@@ -46,7 +46,7 @@ module SiteHook
         say "You can now edit #{jphrc} and add your projects."
       end
     end
-    desc 'bleh', 'bleh'
+    desc 'gen-project [options]', 'generates a project block'
     def gen_project
       hl = HighLine.new
       hl.say "First What's the name of the project?"

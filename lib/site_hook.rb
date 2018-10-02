@@ -34,6 +34,10 @@ module SiteHook
       def self.config
         Pathname(Dir.home).join('.jph', 'config').to_s
       end
+
+      def self.logs
+        Pathname(Dir.home).join('.jph', 'logs')
+      end
     end
   end
   # class SassHandler (inherits from Sinatra::Base)
@@ -67,6 +71,8 @@ module SiteHook
     set :public_folder, Pathname(app_file).dirname.join('site_hook', 'static')
     use SassHandler
     use CoffeeHandler
+
+#
     # @param [String] body JSON String of body
     # @param [String] sig Signature or token from git service
     # @param [String] secret User-defined verification token

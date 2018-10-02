@@ -25,11 +25,11 @@ module SiteHook
           fakelog = SiteHook::HookLogger::FakeLog.new
           reallog = SiteHook::HookLogger::GitLog.new(SiteHook.log_levels['git']).log
           jekyll_source = Jekyll.instance_variable_get('@jekyll_source')
-          build_dest = Jekyll.instance_variable_get('@build_dest')
+          # build_dest = Jekyll.instance_variable_get('@build_dest')
           g = Git.open(jekyll_source, log: fakelog)
           g.pull
           fakelog.entries.each do |level, entries|
-            entries.each { |entry| reallog.send("#{level}", entry) }
+            entries.each { |entry| reallog.send(level.to_s, entry) }
           end
         end
 
@@ -38,7 +38,7 @@ module SiteHook
           build_dest = Jekyll.instance_variable_get('@build_dest')
           log = Jekyll.instance_variable_get('@log')
           Open3.popen2e({'BUNDLE_GEMFILE' => Pathname(jekyll_source).join('Gemfile').to_path}, "bundle exec jekyll build --source #{Pathname(jekyll_source).realdirpath.to_path} --destination #{Pathname(build_dest).to_path}") { |in_io, outerr_io, thr|
-            pid = thr.pid
+            # pid = thr.pid
 
             outerr = outerr_io.read.lines
             outerr.each do |line|
