@@ -96,6 +96,10 @@ module SiteHook
       plaintext = false
       signature = nil
       event = nil
+      gogs = request.env.fetch('HTTP_X_GOGS_EVENT', nil)
+      unless gogs.nil?
+        event = 'push' if gogs == 'push'
+      end
       github = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
       unless github.nil?
         event = 'push' if github == 'push'
@@ -104,11 +108,11 @@ module SiteHook
       unless gitlab.nil?
         event = 'push' if gitlab == 'push'
       end
-      gogs = request.env.fetch('HTTP_X_GOGS_EVENT', nil)
-      unless gogs.nil?
-        event = 'push' if gogs == 'push'
-      end
+
       events = { 'github' => github, 'gitlab' => gitlab, 'gogs' => gogs }
+      if events['github'] && events['gogs']
+        events['github'] = nil
+      end
       events_m_e = events.values.one?
       case events_m_e
       when true

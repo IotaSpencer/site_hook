@@ -19,7 +19,6 @@ module SiteHook
   autoload :Logs, 'site_hook/log'
   autoload :Gem, 'site_hook/gem'
   autoload :Paths, 'site_hook/paths'
-  # rubocop:disable Metrics/ClassLength, Metrics/LineLength, MethodLength, BlockLength
   # class SassHandler (inherits from Sinatra::Base)
   class SassHandler < Sinatra::Base
     set :views, Pathname(app_file).dirname.join('site_hook', 'static', 'sass').to_s
@@ -36,7 +35,4 @@ module SiteHook
       coffee filename.to_sym
     end
   end
-  # class Webhook (inherits from Sinatra::Base)
-
-  # rubocop:enable Metrics/ClassLength, Metrics/LineLength, MethodLength, BlockLength
 end
