@@ -82,7 +82,7 @@ module SiteHook
         @build_dest = build_dest
         @log = logger
         instance = self::Build.new
-        meths = instance.methods.select { |x| x =~ /^do_/ }
+        meths = [instance.do_grab_version, instance.do_pull, instance.do_build]
         begin
           meths.each do |m|
             @log.debug("Running #{m}")

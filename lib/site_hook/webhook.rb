@@ -155,11 +155,8 @@ module SiteHook
           headers 'Content-Type' => 'application/json'
           body { { 'status': 'success' }.to_json }
         when -1, -2, -3
-          status 400
-          headers 'Content-Type' => 'application/json'
-          body do
-            { 'status': 'exception', error: jekyll_status.fetch(:message).to_s }
-          end
+          halt 400, { 'Content-Type' => 'application/json' }, { 'status': 'exception', error: jekyll_status.fetch(:message).to_s }
+
         end
 
       else
