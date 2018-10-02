@@ -61,7 +61,7 @@ module SiteHook
     HOOKLOG = SiteHook::HookLogger::HookLog.new(SiteHook.log_levels['hook']).log
     BUILDLOG = SiteHook::HookLogger::BuildLog.new(SiteHook.log_levels['build']).log
     APPLOG = SiteHook::HookLogger::AppLog.new(SiteHook.log_levels['app']).log
-    JPHRC = YAML.load_file(Pathname(Dir.home).join('.jph-rc'))
+    JPHRC = YAML.load_file(Pathname(Dir.home).join('.jph', 'config'))
     set port: JPHRC.fetch('port', 9090)
     set bind: '127.0.0.1'
     set server: %w[thin]
