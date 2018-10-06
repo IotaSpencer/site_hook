@@ -1,6 +1,7 @@
 require 'thor'
 require 'site_hook/config_class'
 require 'site_hook/server_class'
+#require 'site_hook/debug_class'
 module SiteHook
   class CLI < Thor
     map %w[--version -v] => :__print_version
@@ -24,7 +25,8 @@ module SiteHook
     subcommand('config', SiteHook::ConfigClass)
     desc 'server SUBCOMMAND [OPTIONS]', 'Start the server'
     subcommand('server', SiteHook::ServerClass)
-
+    #desc 'debug SUBCOMMAND [OPTIONS]', 'Debug the Gem'
+    #subcommand('debug', SiteHook::DebugClass)
 
   end
 end

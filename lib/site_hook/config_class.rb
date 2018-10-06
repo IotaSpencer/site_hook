@@ -3,6 +3,7 @@ require 'highline'
 require 'random_password'
 require 'yaml'
 require 'recursive-open-struct'
+require 'pry'
 module SiteHook
   class FileExistsError < Exception
   end

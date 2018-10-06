@@ -17,5 +17,8 @@ module SiteHook
     def self.logs
       Pathname(Dir.home).join('.jph', 'logs')
     end
+    def self.lib_dir
+      Pathname(::Gem.user_dir).join('gems', "site_hook-#{SiteHook::VERSION}", 'lib')
+    end
   end
 end

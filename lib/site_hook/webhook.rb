@@ -21,8 +21,8 @@ module SiteHook
     set server: %w[thin]
     set quiet: true
     set raise_errors: true
-    set views: Pathname(app_file).dirname.join('site_hook', 'views')
-    set :public_folder, Pathname(app_file).dirname.join('site_hook', 'static')
+    set views: Pathname(SiteHook::Paths.lib_dir).dirname.join('site_hook', 'views')
+    set :public_folder, Pathname(SiteHook::Paths.lib_dir).dirname.join('site_hook', 'static')
     use SassHandler
     use CoffeeHandler
 
