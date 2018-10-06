@@ -1,9 +1,26 @@
 body {
-    background-color: #7a7a7a;
+    background-color: #000;
+}
+h1 {
+  color: darkgreen;
+}
+.list-group {
+  border-radius: 5px;
 }
 .list-group-item {
   background-color: rgb(0, 51, 2);
+  border-radius: 5px;
   &:hover {
-    background-color: #000000dc
+    background-color: #3a3a3a;
+  }
+}
+a {
+  color: darkgreen !important;
+  text-decoration-color: darkgreen !important;
+  &:hover {
+    color: green !important;
+  }
+  &:focus {
+    color: green !important;
   }
 }

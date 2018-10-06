@@ -2,6 +2,6 @@
   - projects.each do |name, hsh|
     - if hsh.fetch('private', nil).nil? or hsh.fetch('private', nil) == false
       %a.list-group-item{id: "#{hsh['repo'].sub(/\./, '-').sub(/\//, '-')}", href: "https://#{hsh['host']}/#{hsh['repo']}"}
-        #{name}
+        %p.display-6 #{name}
         %span.badge.badge-pill.badge-dark
           https://#{hsh['host']}/#{hsh['repo']}
