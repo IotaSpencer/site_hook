@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.metadata = {
     'source_uri' => 'https://github.com/IotaSpencer/site_hook',
     'source_code_uri' => 'https://github.com/IotaSpencer/site_hook',
-    'tutorial_uri'] => 'https://iotaspencer.me/projects/site_hook/'
+    'tutorial_uri' => 'https://iotaspencer.me/projects/site_hook/'
   }
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(spec)/})
