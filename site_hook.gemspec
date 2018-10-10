@@ -8,17 +8,17 @@ Gem::Specification.new do |spec|
   spec.authors = ['Ken Spencer']
   spec.email = ['me@iotaspencer.me']
 
-  spec.summary = %q{Catch a github webhook and execute a plugin}
+  spec.summary = %q{Catch a POST request from a git service webhook and build a jekyll site.}
   spec.homepage = 'https://iotaspencer.me/projects/site_hook/'
   spec.license = 'MIT'
-
+  spec.required_ruby_version = '>= 2.3'
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata['source_uri'] = 'https://github.com/IotaSpencer/site_hook'
-    spec.metadata['tutorial'] = 'https://iotaspencer.me/projects/site_hook/'
-  end
-
+  spec.metadata = {
+    'source_uri' => 'https://github.com/IotaSpencer/site_hook',
+    'source_code_uri' => 'https://github.com/IotaSpencer/site_hook',
+    'tutorial_uri'] => 'https://iotaspencer.me/projects/site_hook/'
+  }
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(spec)/})
   end
