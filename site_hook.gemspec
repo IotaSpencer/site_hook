@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = %q{Catch a POST request from a git service webhook and build a jekyll site.}
   spec.homepage = 'https://iotaspencer.me/projects/site_hook/'
   spec.license = 'MIT'
+  spec.licenses = ['MIT']
   spec.required_ruby_version = '>= 2.3'
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
