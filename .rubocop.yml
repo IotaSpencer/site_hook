@@ -1,0 +1,14 @@
+AllCops:
+  TargetRubyVersion: 2.5.1
+Metrics/BlockLength:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Metrics/LineLength:
+  Enabled: false
+Lint/HandleExceptions:
+  Enabled: false

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+require 'site_hook/runner'
+require 'site_hook'
+$threads = []
+SiteHook::Config.new
+SiteHook::Log.new
+APP = SiteHook::Runner.new(ARGV, STDIN, STDOUT, STDERR, Kernel)
+APP.execute!
