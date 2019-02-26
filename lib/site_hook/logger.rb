@@ -15,19 +15,21 @@ module SiteHook
       log_types       = %w[app hook build git fake]
       logs_with_level = %w[app hook build git]
       @@loggers       = RecursiveOpenStruct.new({access: nil, app: nil, hook: nil, build: nil, fake: nil, git: nil})
-      @@loggers.each_pair do |logclass, _value|
+      @@loggers.to_h.each do |logclass, value|
         path                = "#{logclass.to_s.camelize}"
-        @@loggers[logclass] = SiteHook::Loggers.const_get(path)
-      end
-      @@loggers.to_h.each do |key, value|
         level = ''
-        if logs_with_level.include?(key.to_s)
-          if SiteHook::Config.log_levels.fetch("#{key}")
-            level = SiteHook::Config.log_levels.instance_variable_get(:"@#{key}")
+        @@loggers[logclass] = SiteHook::Loggers.const_get(path)
+
+        if logs_with_level.include?(logclass.to_s)
+          if SiteHook::Config.log_levels.fetch("#{logclass}")
+            level = SiteHook::Config.log_levels.instance_variable_get(:"@#{logclass}")
           end
         end
-        SiteHook::Log.remove_const(key.to_s.camelize) if SiteHook::Log.const_defined?(key.to_s.camelize)
-        SiteHook::Log.const_set(key.to_s.camelize, value.new(key.to_s.camelize, "#{level}"))
+        SiteHook::Log.remove_const(logclass.to_s.camelize) if SiteHook::Log.const_defined?(logclass.to_s.camelize)
+        SiteHook::Log.const_set(logclass.to_s.camelize, value.new(logclass.to_s.camelize, "#{level}"))
+      end
+      @@loggers.to_h.each do |key, value|
+
       end
      end
 
