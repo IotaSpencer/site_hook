@@ -29,6 +29,22 @@ module SiteHook
           }
       })
     end
+    def self.validate(config)
+      config.each do |section, hsh|
+        case section.to_s
+        when 'webhook'
+          if hsh['port']
+          else
+
+          end
+        when 'log_levels'
+        when 'cli'
+        when 'projects'
+        else
+          raise UnknownFieldError section
+        end
+      end
+    end
     def inspect
       meths = %i[webhook log_levels cli projects]
       sections = {}
@@ -55,6 +71,7 @@ module SiteHook
       @@filename = SiteHook::Paths.default_config
       begin
         @@config = YAML.load_file(@@filename)
+        validate(@@config)
       rescue Errno::ENOENT
         raise NoConfigError path
       rescue NoMethodError

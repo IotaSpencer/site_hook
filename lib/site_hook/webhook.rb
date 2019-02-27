@@ -10,7 +10,6 @@ require 'scorched'
 require 'rack'
 require 'site_hook/logger'
 module SiteHook
-
   class Server < Scorched::Controller
     config[:logger] = false
     config[:show_http_error_pages] = false
@@ -56,7 +55,6 @@ module SiteHook
     APPLICATION_JSON = 'application/json'
     before do
       SiteHook::Log::App.info "#{request.ip} - #{request.path}:"
-
     end
     after do
       SiteHook::Log::App.info "#{response.status}"
