@@ -13,7 +13,7 @@ commands.each do |filename|
 end
 
 module SiteHook
-  class App < Thor
+  class CLI < Thor
     desc '--version, -v', 'returns version and exits'
     def __version
       puts SiteHook::VERSION

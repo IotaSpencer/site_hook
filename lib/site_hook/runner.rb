@@ -10,7 +10,7 @@ module SiteHook
         $stderr = @stderr
         $stdin = @stdin
         $stdout = @stdout
-        SiteHook::App.start(@argv)
+        SiteHook::CLI.start(@argv)
         0
 
       rescue StandardError => e
