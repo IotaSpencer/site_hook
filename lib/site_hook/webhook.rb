@@ -54,10 +54,10 @@ module SiteHook
     CONTENT_TYPE = 'Content-Type'
     APPLICATION_JSON = 'application/json'
     before do
-      SiteHook::Log::App.info "#{request.ip} - #{request.path}:"
+      SiteHook::Log.app.info "#{request.ip} - #{request.path}:"
     end
     after do
-      SiteHook::Log::App.info "#{response.status}"
+      SiteHook::Log.app.info "#{response.status}"
     end
     get '/' do
       render :not_found
