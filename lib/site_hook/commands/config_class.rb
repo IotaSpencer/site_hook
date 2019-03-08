@@ -13,7 +13,7 @@ module SiteHook
       desc 'gen [options]', 'generate a sample config'
 
       def gen
-        if SiteHook::Paths.default_config.exists?
+        if SiteHook::Paths.default_config.exist?
           puts SiteHook::ConfigSections.all_samples
         end
 

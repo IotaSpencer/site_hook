@@ -88,7 +88,7 @@ module SiteHook
     end
 
     get '/webhook/:hook_name/?' do
-      project = SiteHook::Config.cfg_obj.projects[:"#{params[:hook_name]}"]
+      project = SiteHook::Config.projects[StrExt.mkvar(params[:hook_name])]
       if project.private
         haml :_404, locals: {'project_name' => params[:hook_name]}
       else
@@ -162,7 +162,7 @@ module SiteHook
       if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
         SiteHook::Consts::BUILDLOG.info 'Building...'
         begin
-          jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Consts::BUILDLOG, options: {config: project['config']})
+          jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Log::Build, options: {config: project['config']})
           case jekyll_status
 
           when 0

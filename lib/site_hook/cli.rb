@@ -24,6 +24,8 @@ module SiteHook
     subcommand('config', SiteHook::Commands::ConfigClass)
     desc 'server [subcommand] [options]', 'run server actions'
     subcommand('server', SiteHook::Commands::ServerClass)
+    desc 'jekyll [subcommand] [options]', 'run jekyll actions'
+    subcommand('jekyll', SiteHook::Commands::JekyllClass)
 
   end
 end
