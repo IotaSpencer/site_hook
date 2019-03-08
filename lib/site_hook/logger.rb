@@ -173,6 +173,15 @@ module SiteHook
       "#<SiteHook::Log::Access >"
     end
   end
+  class App
+    include Logger
+    def initialize(level:, base:)
+      super
+    end
+    def inspect
+      "#<SiteHook::Log::App >"
+    end
+  end
 end
 # module SiteHook
 #   class Log
