@@ -54,10 +54,13 @@ module SiteHook
     CONTENT_TYPE = 'Content-Type'
     APPLICATION_JSON = 'application/json'
     before do
-      SiteHook::Log.app.info "#{request.ip} - #{request.path}:"
+      remote_addr = request.env['REMOTE_ADDR']
+      cf_connecting_ip = request.env.fetch('HTTP_CF_CONNECTING_IP', nil)
+      ip = remote_addr || cf_connecting_ip
+      SiteHook::Log.access.log "#{ip} - #{request.path}:"
     end
     after do
-      SiteHook::Log.app.info "#{response.status}"
+      SiteHook::Log.access.log "#{response.status}"
     end
     get '/' do
       render :not_found

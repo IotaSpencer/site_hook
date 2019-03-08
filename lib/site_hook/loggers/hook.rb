@@ -2,7 +2,7 @@ module SiteHook
   module Loggers
 
     class Hook
-      def initialize(klass, level)
+      def initialize(base:, level:)
         @@levels  = {
             unknown: ::Logger::UNKNOWN,
             fatal:   ::Logger::FATAL,
@@ -11,9 +11,9 @@ module SiteHook
             debug:   ::Logger::DEBUG
         }
         @@loggers = {
-            stdout: ::Logger.new(STDOUT, progname: klass),
-            stderr: ::Logger.new(STDERR, progname: klass),
-            file:   ::Logger.new(SiteHook::Paths.make_log_name(klass, level), progname: klass)
+            stdout: ::Logger.new(STDOUT, progname: base),
+            stderr: ::Logger.new(STDERR, progname: base),
+            file:   ::Logger.new(SiteHook::Paths.make_log_name(base, level), progname: base)
         }
         @@loggers.each do |_logger, obj|
           obj.datetime_format = '%Y-%m-%dT%H:%M:%S%Z'

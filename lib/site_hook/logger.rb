@@ -1,4 +1,3 @@
-require 'site_hook/string_ext'
 require 'logger'
 require 'recursive_open_struct'
 require 'site_hook/loggers'
@@ -56,11 +55,11 @@ module SiteHook
         end
       end
       unless is_config_valid
-        raise ArgumentError "invalid log type in config"
+        raise ArgumentError "invalid log type(s) in config, [#{invalid_types.join(', ')}]"
       end
     end
     def inspect
-      meths    = %i[hook build git app]
+      meths    = %i[hook build git app fake access]
       sections = {}
       meths.each do |m|
         sections[m] = self.class.send(m).inspect
@@ -70,24 +69,11 @@ module SiteHook
       "#<SiteHook::Log #{secs.join(' ')}>"
     end
 
-    def self.reload!
-      @@config = YAML.load_file(@@filename)
-    end
-
-    def self.filename
-      @@filename
-    end
-
-    def self.config
-      self.new
-    end
-
     def initialize
-      @@config          = {}
+      @@config          = SiteHook::Config.log_levels
       @@config_filename = SiteHook::Paths.default_config
       begin
-        @@config = YAML.load_file(@@config_filename)
-        validate(@@config)
+        self.validate(@@config)
       rescue Errno::ENOENT
         raise NoConfigError path
       rescue NoMethodError
@@ -99,87 +85,29 @@ module SiteHook
 
     # @return [Access]
     def self.access
-      Access.new(level: nil, base: self)
+      Loggers::Access.new(base: 'SiteHook::Log::Access')
     end
     def self.fake
-      Fake.new(level: nil)
+      Loggers::Fake.new
     end
     # @return [Hook]
     def self.hook
-      Hook.new(level: @@config['log_levels']['hook'])
+      Loggers::Hook.new(level: @@config['log_levels']['hook'], base: 'SiteHook::Log::Hook')
     end
 
     # @return [Git]
     def self.git
-      Git.new(level: @@config['log_levels']['git'])
+      Loggers::Git.new(level: @@config['log_levels']['git'], base: 'SiteHook::Log::Git')
     end
 
     # @return [Build]
     def self.build
-      Build.new(level: @@config['log_levels']['build'], base: self)
+      Loggers::Build.new(level: @@config['log_levels']['build'], base: 'SiteHook::Log::Build')
     end
 
     # @return [LogLevels]
     def self.app
-      App.new(level: @@config['log_levels']['app'])
-    end
-  end
-  module Logger
-    def initialize(level:, base:)
-      @@loggers = {
-          stdout: ::Logger.new(STDOUT, progname: base),
-          stderr: ::Logger.new(STDERR, progname: base),
-          file: ::Logger.new(SiteHook::Paths.make_log_name(base), progname: base)
-      }
-    end
-  end
-  class Hook
-    include Logger
-    def initialize(*args)
-      super
-    end
-    def inspect
-      "#<SiteHook::Webhook >"
-    end
-
-  end
-  class Git
-    include Logger
-
-    def initialize(*args)
-      super
-    end
-
-    def inspect
-      "#<SiteHook::Log::Git >"
-    end
-  end
-  class Build
-    include Logger
-    def initialize(level:, base:)
-      super
-    end
-    def inspect
-      "#<SiteHook::Log::Build >"
-    end
-  end
-  class Access
-    include Logger
-    def initialize(level:, base:)
-      super
-    end
-
-    def inspect
-      "#<SiteHook::Log::Access >"
-    end
-  end
-  class App
-    include Logger
-    def initialize(level:, base:)
-      super
-    end
-    def inspect
-      "#<SiteHook::Log::App >"
+      Loggers::App.new(level: @@config['log_levels']['app'], base: 'SiteHook::Log::App')
     end
   end
 end
