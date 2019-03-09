@@ -135,7 +135,7 @@ module SiteHook
 
     def inspect
 
-      output       = []
+      output = []
       instance_variables.each do |project|
         output << "#{StrExt.rematvar(project)}=#{instance_variable_get(project).inspect}"
       end
@@ -145,9 +145,14 @@ module SiteHook
     #
     # Collect project names that meet certain criteria
     def collect_public
-      instance_variables.collect do |project_var|
-        !instance_variable_get(project_var).private
+      public_vars     = instance_variables.reject do |project_var|
+        instance_variable_get(project_var).private
       end
+      public_projects = []
+      public_vars.each do |var|
+        public_projects << instance_variable_get(var)
+      end
+      public_projects
     end
   end
   class LogLevels
@@ -247,12 +252,17 @@ module SiteHook
   #   Command
   #
   class Project
-    attr_reader :name, :src, :dst, :host, :repo, :hookpass
+    attr_reader :name, :src, :dst, :host, :repo, :hookpass, :private
 
     def initialize(name, config)
       @name = name.to_s
       config.each do |option, value|
         instance_variable_set(StrExt.mkatvar(option), value)
+        if config.fetch('private', nil)
+          instance_variable_set(StrExt.mkatvar(option), value) unless instance_variables.include?(:@private)
+        else
+          instance_variable_set(StrExt.mkatvar('private'), false)
+        end
       end
     end
 
@@ -261,7 +271,7 @@ module SiteHook
       instance_variables.each do |sym|
         outputs << "#{StrExt.rematvar(sym)}=#{instance_variable_get(sym)}"
       end
-      "#<SiteHook::Projects::Project #{outputs.join(' ')}>"
+      "#<SiteHook::Project #{outputs.join(' ')}>"
     end
   end
   class CliClasses

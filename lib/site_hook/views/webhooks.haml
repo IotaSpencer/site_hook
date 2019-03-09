@@ -1,21 +1,16 @@
-%script{src: "https://cdn.jsdelivr.net/gh/lepture/github-cards@latest/jsdelivr/widget.js"}
-
 .card-columns
-  - projects.each do |name, hsh|
-    - if hsh.to_h.fetch(:private, nil).nil? or hsh.to_h.fetch(:private, nil) == false
-      %div.card.bg-dark{id: "#{hsh[:repo].sub(/\./, '-').sub(/\//, '-')}"}
-        .card-header
-          .display-6 #{name}
-        .card-body
-          - if hsh[:host] == 'github.com'
-            %div.github-card{ data: {github:"#{hsh[:repo]}", width:"400", height:"", theme:"default"} }
-        .card-footer
-          %a.card-link{href: "https://#{hsh[:host]}/#{hsh[:repo]}"}
-            #{hsh[:repo]}
-          - if hsh[:host] == 'github.com'
-            %span On GitHub
-          - elsif hsh[:host] == 'gitlab.com' or hsh[:host] == 'gitlab.org'
-            %span On GitLab
-          - else
-            %span On #{hsh[:host]}
-          %a.card-link{href: "https://#{request.host}/webhook/#{name}"}
+  - projects.each do |project|
+    %div.card.bg-dark{id: "#{project.repo.sub(/\./, '-').sub(/\//, '-')}"}
+      .card-header
+        .display-6 #{project.name}
+      .card-body
+        %a.card-link{href: "https://#{hsh[:host]}/#{hsh[:repo]}"}
+          #{project.repo}
+        - if project.host == 'github.com'
+          %span On GitHub
+        - elsif project.host == 'gitlab.com' or project.host == 'gitlab.org'
+          %span On GitLab
+        - else
+          %span On #{project.host}
+        %a.card-link{href: "https://#{request.host}/webhook/#{project.name}"}
+      .card-footer

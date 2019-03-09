@@ -13,16 +13,15 @@ require 'json'
 module SiteHook
   class Server < Scorched::Controller
     config[:logger]                = false
+    config[:show_exceptions] = true
     config[:show_http_error_pages] = false
     middleware << proc do
       use Rack::Static, :url => ['public']
     end
-    render_defaults.merge!(
-        dir:    SiteHook::Paths.lib_dir.join('site_hook', 'views'),
-        layout: :layout,
-        engine: :haml
-    )
-    config[:static_dir] = Pathname(SiteHook::Paths.lib_dir).join('site_hook', 'assets', 'public')
+    render_defaults[:dir]    = SiteHook::Paths.lib_dir.join('site_hook', 'views').to_s
+    render_defaults[:layout] = :layout
+    render_defaults[:engine] = :haml
+    config[:static_dir]      = Pathname(SiteHook::Paths.lib_dir).join('site_hook', 'assets', 'public').to_s
 
     #
     # @param [String] body JSON String of body
@@ -65,23 +64,8 @@ module SiteHook
       render :not_found
     end
     post '/webhook/?' do
-      halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'pick a hook', 'status': 'failure'}.to_json
+      halt 403
     end
-
-    get '/webhooks.json' do
-      public_projects = SiteHook::Config.projects.collect_public
-      SiteHook::Log.app.info public_projects
-      result          = {}
-      public_projects.each do |obj|
-        wanted_methods = %i[name repo src dst host]
-        wanted_methods.each do |m|
-          result.store(m,obj.send(m))
-
-        end
-      end
-      render result.to_json, layout: false
-    end
-
     get '/webhooks/?' do
       render :webhooks, locals: {'projects' => SiteHook::Config.projects}
     end
