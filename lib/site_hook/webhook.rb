@@ -9,17 +9,18 @@
 require 'scorched'
 require 'rack'
 require 'site_hook/logger'
+require 'json'
 module SiteHook
   class Server < Scorched::Controller
-    config[:logger] = false
+    config[:logger]                = false
     config[:show_http_error_pages] = false
     middleware << proc do
       use Rack::Static, :url => ['public']
     end
     render_defaults.merge!(
-                       dir: SiteHook::Paths.lib_dir.join('site_hook','views'),
-                       layout: :layout,
-                       engine: :haml
+        dir:    SiteHook::Paths.lib_dir.join('site_hook', 'views'),
+        layout: :layout,
+        engine: :haml
     )
     config[:static_dir] = Pathname(SiteHook::Paths.lib_dir).join('site_hook', 'assets', 'public')
 
@@ -36,27 +37,25 @@ module SiteHook
         case service
         when 'gogs'
           if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
-            SiteHook::Consts::APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
+            SiteHook::Log.app.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
             true
           end
         when 'github'
           if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
-            SiteHook::Consts::APPLOG.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
+            SiteHook::Log.app.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
             true
           end
         else
           # This shouldn't happen
         end
-
       end
     end
 
-    CONTENT_TYPE = 'Content-Type'
     APPLICATION_JSON = 'application/json'
     before do
-      remote_addr = request.env['REMOTE_ADDR']
+      remote_addr      = request.env['REMOTE_ADDR']
       cf_connecting_ip = request.env.fetch('HTTP_CF_CONNECTING_IP', nil)
-      ip = cf_connecting_ip || remote_addr
+      ip               = cf_connecting_ip || remote_addr
       SiteHook::Log.access.log "#{ip} - #{request.path}:"
     end
     after do
@@ -65,25 +64,22 @@ module SiteHook
     get '/' do
       render :not_found
     end
-
+    post '/webhook/?' do
+      halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'pick a hook', 'status': 'failure'}.to_json
+    end
 
     get '/webhooks.json' do
-      content_type APPLICATION_JSON
-      public_projects = SiteHook::Config.class_variable_get(:'@@projects').each do |project_name, klass|
-        if klass.private
-          SiteHook::Consts::APPLOG.log.debug("Not displaying #{project_name} since its private")
-          next
-        end
-
-      end
+      public_projects = SiteHook::Config.projects.collect_public
+      SiteHook::Log.app.info public_projects
       result          = {}
-      public_projects.each do |project, hsh|
-        result[project] = {}
-        hsh.delete('hookpass')
-        result[project].merge!(hsh)
+      public_projects.each do |obj|
+        wanted_methods = %i[name repo src dst host]
+        wanted_methods.each do |m|
+          result.store(m,obj.send(m))
+
+        end
       end
-      headers CONTENT_TYPE => APPLICATION_JSON, 'Accept' => APPLICATION_JSON
-      json result, layout: false
+      render result.to_json, layout: false
     end
 
     get '/webhooks/?' do
@@ -93,18 +89,18 @@ module SiteHook
     get '/webhook/:hook_name/?' do
       project = SiteHook::Config.projects[StrExt.mkvar(params[:hook_name])]
       if project.private
-        haml :_404, locals: {'project_name' => params[:hook_name]}
+        render :_404, locals: {'project_name' => params[:hook_name]}
       else
-        haml :webhook, locals: {'host': project.host, 'repo': project.repo}
+        render :webhook, locals: {'host': project.host, 'repo': project.repo}
       end
 
     end
     post '/webhook/:hook_name/?' do
+      content_type APPLICATION_JSON
       service = nil
       request.body.rewind
       req_body = request.body.read
-      js       = RecursiveOpenStruct.new(JSON.parse(req_body))
-      project = SiteHook::Config.projects.send(StrExt.mkvar(params[:hook_name]))
+      project  = SiteHook::Config.projects.send(StrExt.mkvar(params[:hook_name]))
       if project.nil?
         halt 404, {message: 'no such project', status: 1}.to_json
       end
@@ -183,9 +179,6 @@ module SiteHook
       else
         halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'incorrect secret', 'status': 'failure'}.to_json
       end
-    end
-    post '/webhook/?' do
-      halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'pick a hook', error: 'root webhook hit', 'status': 'failure'}.to_json
     end
   end
 end
