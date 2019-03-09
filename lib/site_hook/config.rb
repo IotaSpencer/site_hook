@@ -137,9 +137,9 @@ module SiteHook
 
       output       = []
       instance_variables.each do |project|
-        output << "#{project}=#{instance_variable_get(project).inspect}"
+        output << "#{StrExt.rematvar(project)}=#{instance_variable_get(project).inspect}"
       end
-      "#<SiteHook::Projects #{output}"
+      "#<SiteHook::Projects #{output.join(' ')}"
     end
 
     #
