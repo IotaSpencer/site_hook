@@ -64,11 +64,11 @@ module SiteHook
     get '/' do
       render :not_found
     end
-    controller '/webhook' do
-      post '/' do
+    controller do
+      post '/webhook' do
         halt 403
       end
-      get '/**' do |capture|
+      get '/webhook/**' do |capture|
         project = SiteHook::Config.projects.find_project(capture)
         if project.nil?
           render :maybe_private
@@ -77,7 +77,7 @@ module SiteHook
         end
 
       end
-      post '/**' do |capture|
+      post '/webhook/**' do |capture|
         service = nil
         request.body.rewind
         req_body = request.body.read
@@ -159,8 +159,8 @@ module SiteHook
         end
       end
     end
-    controller '/webhooks' do
-      get '/' do
+    controller do
+      get '/webhooks' do
         render :webhooks, locals: {'projects' => SiteHook::Config.projects}
       end
 
