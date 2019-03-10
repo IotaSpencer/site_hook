@@ -53,6 +53,11 @@ module SiteHook
           value.warn(obj)
         end
       end
+      def debug(obj)
+        @@loggers.each do |key, value|
+          value.debug(obj) if key != :stderr
+        end
+      end
 
       # @param [Symbol] level log level to log at
       # @param [Object] obj some kind of object or msg to log

@@ -22,47 +22,52 @@ module SiteHook
         end
       end
 
-      def self.unknown(obj)
+      def unknown(obj)
         @@loggers.each do |_key, value|
           value.unknown(obj)
         end
       end
 
-      def self.error(obj)
+      def error(obj)
         @@loggers.each do |_key, value|
           value.error(obj)
         end
       end
 
-      def self.info(obj)
-        @@loggers.each do |_key, value|
+      def info(obj)
+        @@loggers.each do |key, value|
           next if key == :stderr
           value.info(obj)
         end
       end
 
-      def self.fatal(obj)
+      def fatal(obj)
         @@loggers.each do |key, value|
           next if key == :stderr
           value.fatal(obj)
         end
       end
 
-      def self.warn(obj)
+      def warn(obj)
         @@loggers.each do |_key, value|
           value.warn(obj)
+        end
+      end
+      def debug(obj)
+        @@loggers.each do |_key, value|
+          value.debug(obj)
         end
       end
 
       # @param [Symbol] level log level to log at
       # @param [Object] obj some kind of object or msg to log
-      def self.log(level, obj)
+      def log(level, obj)
         @@loggers.each do |logger|
           logger.add(@levels[level], obj)
         end
       end
 
-      def self.log_raw(msg)
+      def log_raw(msg)
         @@loggers.each do |logger|
           logger.<<(obj)
         end

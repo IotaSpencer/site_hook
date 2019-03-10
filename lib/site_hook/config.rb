@@ -318,12 +318,17 @@ module SiteHook
   #   Command
   #
   class Project
-    attr_reader :name, :src, :dst, :host, :repo, :hookpass, :private
+    attr_reader :name, :src, :dst, :host, :repo, :hookpass, :private, :config
 
     def initialize(name, config)
       @name = name.to_s
       config.each do |option, value|
         instance_variable_set(StrExt.mkatvar(option), value)
+        if instance_variable_get(StrExt.mkatvar(:config))
+          # variable exists in configuration
+        else
+          instance_variable_set(StrExt.mkatvar(:config), '_config.yml')
+        end
         if config.fetch('private', nil)
           instance_variable_set(StrExt.mkatvar(option), value) unless instance_variables.include?(:@private)
         else

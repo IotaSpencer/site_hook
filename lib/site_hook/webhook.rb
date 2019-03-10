@@ -12,7 +12,7 @@ require 'site_hook/logger'
 require 'json'
 module SiteHook
   class Server < Scorched::Controller
-    config[:logger]                = false
+    config[:logger]                = true
     config[:show_exceptions] = true
     config[:show_http_error_pages] = false
     middleware << proc do
@@ -140,7 +140,7 @@ module SiteHook
         if Server.verified?(req_body.to_s, signature, project.hookpass, plaintext: plaintext, service: service)
           SiteHook::Log.build.info 'Building...'
           begin
-            jekyll_status = SiteHook::Senders::Jekyll.build(project.src, project.dst, SiteHook::Log.Build, options: {config: project.config})
+            jekyll_status = SiteHook::Senders::Jekyll.build(project.src, project.dst, SiteHook::Log.build, options: {config: project.config})
             case jekyll_status
 
             when 0
