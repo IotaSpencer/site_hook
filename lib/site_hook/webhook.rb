@@ -67,8 +67,8 @@ module SiteHook
       post '/' do
         halt 403
       end
-      get '/:hook_name' do
-        project = SiteHook::Config.projects.find_project(captures[:hook_name])
+      get '/**' do |capture|
+        project = SiteHook::Config.projects.find_project(capture)
         if project.nil?
           render :maybe_private
         else
