@@ -171,12 +171,30 @@ module SiteHook
       project_obj = public_vars.select do |project|
         project == StrExt.mkatvar(StrExt.mkvar(name))
       end
+      project_obj = project_obj.join
       begin
-        instance_variable_get(project_obj.join)
+        instance_variable_get(project_obj)
       rescue NameError
         nil
       end
 
+    end
+    def get(project)
+      if instance_variables.empty?
+        return :no_projects
+      end
+      vars = instance_variables.select do |name|
+        name == StrExt.mkatvar(StrExt.mkvar(project))
+      end
+      if vars.empty?
+        return :not_found
+      end
+      obj = vars.join
+      begin
+        instance_variable_get(obj)
+      rescue NameError => e
+        return :not_found
+      end
     end
     #
     # Collect project names that meet certain criteria

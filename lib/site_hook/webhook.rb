@@ -1,5 +1,5 @@
 ##########
-# -> File: /home/ken/RubymineProjects/site_hook/lib/site_hook/webhook.rb
+# -> File: /site_hook/lib/site_hook/webhook.rb
 # -> Project: site_hook
 # -> Author: Ken Spencer <me@iotaspencer.me>
 # -> Last Modified: 1/10/2018 21:35:44
@@ -14,7 +14,7 @@ module SiteHook
   class Server < Scorched::Controller
     config[:logger]                = false
     config[:show_exceptions] = true
-    config[:show_http_error_pages] = true
+    config[:show_http_error_pages] = false
     middleware << proc do
       use Rack::Static, :url => ['public']
     end
@@ -35,12 +35,12 @@ module SiteHook
       else
         case service
         when 'gogs'
-          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)
+          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body.chomp)
             SiteHook::Log.app.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA256.new, secret, body)}"
             true
           end
         when 'github'
-          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)
+          if sig == OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body.chomp)
             SiteHook::Log.app.debug "Secret verified: #{sig} === #{OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, secret, body)}"
             true
           end
@@ -76,14 +76,15 @@ module SiteHook
         end
 
       end
-      post '/:hook_name' do
-        content_type APPLICATION_JSON
+      post '/**' do |capture|
         service = nil
         request.body.rewind
         req_body = request.body.read
-        project  = SiteHook::Config.projects.find_project(captures[:hook_name])
-        if project.nil?
+        project  = SiteHook::Config.projects.get(capture)
+        if project == :not_found
           halt 404, {message: 'no such project', status: 1}.to_json
+        elsif project == :no_projects
+          halt 500, {message: 'no projects defined', status: 2}.to_json
         end
         plaintext = false
         signature = nil
@@ -112,17 +113,14 @@ module SiteHook
           service = events.select { |_key, value| value }.keys.first
         when false
           halt 400,
-               {CONTENT_TYPE: APPLICATION_JSON},
                {message: 'events are mutually exclusive', status: 'failure'}.to_json
 
         else
           halt 400,
-               {CONTENT_TYPE: APPLICATION_JSON},
                {'status': 'failure', 'message': 'something weird happened'}
         end
         if event != 'push' && event.nil?
           halt 400,
-               {CONTENT_TYPE: APPLICATION_JSON},
                {message: 'no event header', status: 'failure'}.to_json
         end
         case service
@@ -139,26 +137,24 @@ module SiteHook
         else
           # This shouldn't happen
         end
-        if Server.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
+        if Server.verified?(req_body.to_s, signature, project.hookpass, plaintext: plaintext, service: service)
           SiteHook::Log.build.info 'Building...'
           begin
-            jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Log.Build, options: {config: project['config']})
+            jekyll_status = SiteHook::Senders::Jekyll.build(project.src, project.dst, SiteHook::Log.Build, options: {config: project.config})
             case jekyll_status
 
             when 0
-              status 200
-              headers CONTENT_TYPE => APPLICATION_JSON
-              body { {'status': 'success'}.to_json }
+               {'status': 'success'}.to_json
             when -1, -2, -3
-              halt 400, {CONTENT_TYPE => APPLICATION_JSON}, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}
+              halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}
             else
               # This shouldn't happen
             end
           rescue => e
-            halt 500, {CONTENT_TYPE => APPLICATION_JSON}, {'status': 'exception', error: e.to_s}
+            halt 500, {'status': 'exception', error: e.to_s}.to_json
           end
         else
-          halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'incorrect secret', 'status': 'failure'}.to_json
+          halt 403, {message: 'incorrect secret', 'status': 'failure'}.to_json
         end
       end
     end
