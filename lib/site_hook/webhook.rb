@@ -53,6 +53,7 @@ module SiteHook
     APPLICATION_JSON = 'application/json'
     before do
       remote_addr      = request.env['REMOTE_ADDR']
+      SiteHook::Log.app.debug request.env.inspect
       cf_connecting_ip = request.env.fetch('HTTP_CF_CONNECTING_IP', nil)
       ip               = cf_connecting_ip || remote_addr
       SiteHook::Log.access.log "#{ip} - #{request.path}:"
