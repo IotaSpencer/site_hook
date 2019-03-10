@@ -81,7 +81,7 @@ module SiteHook
         service = nil
         request.body.rewind
         req_body = request.body.read
-        project  = SiteHook::Config.projects.send(StrExt.mkvar(captures[:hook_name]))
+        project  = SiteHook::Config.projects.find_project(captures[:hook_name])
         if project.nil?
           halt 404, {message: 'no such project', status: 1}.to_json
         end
