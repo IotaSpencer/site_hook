@@ -21,7 +21,7 @@ module SiteHook
       @@loggers = {
           stdout: ::Logger.new(STDOUT, progname: @@base),
           stderr: ::Logger.new(STDERR, progname: @@base),
-          file:   ::Logger.new(SiteHook::Paths.make_log_name(self), progname: @@base)
+          file:   ::Logger.new(SiteHook::Paths.make_log_name(self.to_s), progname: @@base)
       }
       @@loggers.each do |_logger, obj|
         obj.datetime_format = '%Y-%m-%dT%H:%M:%S%Z'
@@ -31,7 +31,7 @@ module SiteHook
       end
     end
     def self.base=(base)
-      @@base = base
+      @@base = base.to_s
     end
     def self.set_base_default
       @@base = 'Logger'
