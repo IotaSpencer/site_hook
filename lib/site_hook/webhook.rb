@@ -139,10 +139,10 @@ module SiteHook
         else
           # This shouldn't happen
         end
-        if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
-          SiteHook::Consts::BUILDLOG.info 'Building...'
+        if Server.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
+          SiteHook::Log.build.info 'Building...'
           begin
-            jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Log::Build, options: {config: project['config']})
+            jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Log.Build, options: {config: project['config']})
             case jekyll_status
 
             when 0
