@@ -1,0 +1,9 @@
+.card.bg-dark
+  .card-header.bg-dark
+    %h1= project.name
+  .card-body.bg-dark
+    %p Hosted on #{project.host}
+
+  .card-footer.bg-dark
+    - link_href = "https://#{project.host}/#{project.repo}"
+    %a{href: link_href} #{link_href}

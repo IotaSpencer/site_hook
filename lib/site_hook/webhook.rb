@@ -14,7 +14,7 @@ module SiteHook
   class Server < Scorched::Controller
     config[:logger]                = false
     config[:show_exceptions] = true
-    config[:show_http_error_pages] = false
+    config[:show_http_error_pages] = true
     middleware << proc do
       use Rack::Static, :url => ['public']
     end
@@ -63,106 +63,110 @@ module SiteHook
     get '/' do
       render :not_found
     end
-    post '/webhook/?' do
-      halt 403
-    end
-    get '/webhooks/?' do
-      render :webhooks, locals: {'projects' => SiteHook::Config.projects}
-    end
-
-    get '/webhook/:hook_name/?' do
-      project = SiteHook::Config.projects[StrExt.mkvar(params[:hook_name])]
-      if project.private
-        render :_404, locals: {'project_name' => params[:hook_name]}
-      else
-        render :webhook, locals: {'host': project.host, 'repo': project.repo}
+    controller '/webhook' do
+      post '/' do
+        halt 403
       end
-
-    end
-    post '/webhook/:hook_name/?' do
-      content_type APPLICATION_JSON
-      service = nil
-      request.body.rewind
-      req_body = request.body.read
-      project  = SiteHook::Config.projects.send(StrExt.mkvar(params[:hook_name]))
-      if project.nil?
-        halt 404, {message: 'no such project', status: 1}.to_json
-      end
-      plaintext = false
-      signature = nil
-      event     = nil
-      gogs      = request.env.fetch('HTTP_X_GOGS_EVENT', nil)
-      unless gogs.nil?
-        event = 'push' if gogs == 'push'
-      end
-      github = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
-      unless github.nil?
-        event = 'push' if github == 'push'
-      end
-      gitlab = request.env.fetch('HTTP_X_GITLAB_EVENT', nil)
-      unless gitlab.nil?
-        event = 'push' if gitlab == 'push'
-      end
-
-      events = {'github' => github, 'gitlab' => gitlab, 'gogs' => gogs}
-      if events['github'] && events['gogs']
-        events['github'] = nil
-      end
-      events_m_e = events.values.one?
-      case events_m_e
-      when true
-        event   = 'push'
-        service = events.select { |_key, value| value }.keys.first
-      when false
-        halt 400,
-             {CONTENT_TYPE: APPLICATION_JSON},
-             {message: 'events are mutually exclusive', status: 'failure'}.to_json
-
-      else
-        halt 400,
-             {CONTENT_TYPE: APPLICATION_JSON},
-             {'status': 'failure', 'message': 'something weird happened'}
-      end
-      if event != 'push' && event.nil?
-        halt 400,
-             {CONTENT_TYPE: APPLICATION_JSON},
-             {message: 'no event header', status: 'failure'}.to_json
-      end
-      case service
-      when 'gitlab'
-        signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
-        plaintext = true
-      when 'github'
-        signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', '').sub!(/^sha1=/, '')
-        plaintext = false
-
-      when 'gogs'
-        signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
-        plaintext = false
-      else
-        # This shouldn't happen
-      end
-      if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
-        SiteHook::Consts::BUILDLOG.info 'Building...'
-        begin
-          jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Log::Build, options: {config: project['config']})
-          case jekyll_status
-
-          when 0
-            status 200
-            headers CONTENT_TYPE => APPLICATION_JSON
-            body { {'status': 'success'}.to_json }
-          when -1, -2, -3
-            halt 400, {CONTENT_TYPE => APPLICATION_JSON}, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}
-          else
-            # This shouldn't happen
-          end
-        rescue => e
-          halt 500, {CONTENT_TYPE => APPLICATION_JSON}, {'status': 'exception', error: e.to_s}
+      get '/:hook_name' do
+        project = SiteHook::Config.projects.find_project(captures[:hook_name])
+        if project.nil?
+          render :maybe_private
+        else
+          render :webhook, locals: {project: project}
         end
-      else
-        halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'incorrect secret', 'status': 'failure'}.to_json
+
       end
+      post '/:hook_name' do
+        content_type APPLICATION_JSON
+        service = nil
+        request.body.rewind
+        req_body = request.body.read
+        project  = SiteHook::Config.projects.send(StrExt.mkvar(captures[:hook_name]))
+        if project.nil?
+          halt 404, {message: 'no such project', status: 1}.to_json
+        end
+        plaintext = false
+        signature = nil
+        event     = nil
+        gogs      = request.env.fetch('HTTP_X_GOGS_EVENT', nil)
+        unless gogs.nil?
+          event = 'push' if gogs == 'push'
+        end
+        github = request.env.fetch('HTTP_X_GITHUB_EVENT', nil)
+        unless github.nil?
+          event = 'push' if github == 'push'
+        end
+        gitlab = request.env.fetch('HTTP_X_GITLAB_EVENT', nil)
+        unless gitlab.nil?
+          event = 'push' if gitlab == 'push'
+        end
+
+        events = {'github' => github, 'gitlab' => gitlab, 'gogs' => gogs}
+        if events['github'] && events['gogs']
+          events['github'] = nil
+        end
+        events_m_e = events.values.one?
+        case events_m_e
+        when true
+          event   = 'push'
+          service = events.select { |_key, value| value }.keys.first
+        when false
+          halt 400,
+               {CONTENT_TYPE: APPLICATION_JSON},
+               {message: 'events are mutually exclusive', status: 'failure'}.to_json
+
+        else
+          halt 400,
+               {CONTENT_TYPE: APPLICATION_JSON},
+               {'status': 'failure', 'message': 'something weird happened'}
+        end
+        if event != 'push' && event.nil?
+          halt 400,
+               {CONTENT_TYPE: APPLICATION_JSON},
+               {message: 'no event header', status: 'failure'}.to_json
+        end
+        case service
+        when 'gitlab'
+          signature = request.env.fetch('HTTP_X_GITLAB_TOKEN', '')
+          plaintext = true
+        when 'github'
+          signature = request.env.fetch('HTTP_X_HUB_SIGNATURE', '').sub!(/^sha1=/, '')
+          plaintext = false
+
+        when 'gogs'
+          signature = request.env.fetch('HTTP_X_GOGS_SIGNATURE', '')
+          plaintext = false
+        else
+          # This shouldn't happen
+        end
+        if Webhook.verified?(req_body.to_s, signature, project['hookpass'], plaintext: plaintext, service: service)
+          SiteHook::Consts::BUILDLOG.info 'Building...'
+          begin
+            jekyll_status = SiteHook::Senders::Jekyll.build(project['src'], project['dst'], SiteHook::Log::Build, options: {config: project['config']})
+            case jekyll_status
+
+            when 0
+              status 200
+              headers CONTENT_TYPE => APPLICATION_JSON
+              body { {'status': 'success'}.to_json }
+            when -1, -2, -3
+              halt 400, {CONTENT_TYPE => APPLICATION_JSON}, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}
+            else
+              # This shouldn't happen
+            end
+          rescue => e
+            halt 500, {CONTENT_TYPE => APPLICATION_JSON}, {'status': 'exception', error: e.to_s}
+          end
+        else
+          halt 403, {CONTENT_TYPE => APPLICATION_JSON}, {message: 'incorrect secret', 'status': 'failure'}.to_json
+        end
+      end
+    end
+    controller '/webhooks' do
+      get '/' do
+        render :webhooks, locals: {'projects' => SiteHook::Config.projects}
+      end
+
     end
   end
 end

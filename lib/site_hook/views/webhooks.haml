@@ -4,7 +4,7 @@
       .card-header
         .display-6 #{project.name}
       .card-body
-        %a.card-link{href: "https://#{hsh[:host]}/#{hsh[:repo]}"}
+        %a.card-link{href: "https://#{project.host}/#{project.repo}"}
           #{project.repo}
         - if project.host == 'github.com'
           %span On GitHub

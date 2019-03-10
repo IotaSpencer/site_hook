@@ -70,7 +70,7 @@ module SiteHook
       "#<SiteHook::Log #{secs.join(' ')}>"
     end
 
-    def initialize
+    def initialize(input, output, errput)
 
       begin
         @@config = SiteHook::Config.log_levels

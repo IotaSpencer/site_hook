@@ -69,8 +69,6 @@ module SiteHook
     def self.make_log_name(klass, level = nil, old_exists = self.old_logs.exist?, new_exists = self.logs.exist?)
       if level
         level = "-#{level}"
-      else
-        level = level
       end
       case old_exists
       when true

@@ -10,6 +10,9 @@ module SiteHook
         $stderr = @stderr
         $stdin = @stdin
         $stdout = @stdout
+        SiteHook::PreLogger.new($stdin, $stdout, $stderr)
+        SiteHook::Config.new
+        SiteHook::Log.new($stdin, $stdout, $stderr)
         SiteHook::CLI.start(@argv)
         0
 

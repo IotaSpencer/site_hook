@@ -2,6 +2,7 @@ require 'site_hook/paths'
 require 'yaml'
 require 'site_hook/string_ext'
 #require 'site_hook/configs'
+require 'site_hook/prelogger'
 module SiteHook
   class Config
     def self.defaults
@@ -35,12 +36,36 @@ module SiteHook
         case section.to_s
         when 'webhook'
           if hsh['port']
+            port_validity = [
+                hsh['port'].respond_to?(:to_i),
+                hsh['port'].is_a?(Integer)
+            ].drop_while(&:!)
+            SiteHook::PreLogger.debug port_validity
           else
-
+            raise InvalidConfigError 'webhook', index
           end
+          if hsh['host']
+            host_validity = [
+                hsh['host'].respond_to?(:to_s)
+
+            ]
+          end
+          [port_validity]
         when 'log_levels'
+
         when 'cli'
         when 'projects'
+        when 'out'
+          if hsh['out'].keys
+            hsh['out'].keys.each do |key|
+              case key
+              when 'discord'
+              when 'irc'
+              else
+                raise InvalidConfigError 'out', "#{key} is an invalid out service"
+              end
+            end
+          end
         else
           raise UnknownFieldError section
         end
@@ -75,7 +100,6 @@ module SiteHook
       @@filename = SiteHook::Paths.default_config
       begin
         @@config = YAML.load_file(@@filename)
-        validate(@@config)
       rescue Errno::ENOENT
         raise NoConfigError path
       rescue NoMethodError
@@ -125,11 +149,9 @@ module SiteHook
 
   end
   class Projects
-    # include Section
-
     def initialize(config)
       config.each do |project, options|
-        instance_variable_set(StrExt.mkatvar(StrExt.mkvar(project)), Project.new(StrExt.mkvar(project), options))
+        instance_variable_set(StrExt.mkatvar(StrExt.mkvar(project)), Project.new(project, options))
       end
     end
 
@@ -142,6 +164,20 @@ module SiteHook
       "#<SiteHook::Projects #{output.join(' ')}"
     end
 
+    def find_project(name)
+      public_vars = instance_variables.reject do |project_var|
+        instance_variable_get(project_var).private
+      end
+      project_obj = public_vars.select do |project|
+        project == StrExt.mkatvar(StrExt.mkvar(name))
+      end
+      begin
+        instance_variable_get(project_obj.join)
+      rescue NameError
+        nil
+      end
+
+    end
     #
     # Collect project names that meet certain criteria
     def collect_public
@@ -153,6 +189,18 @@ module SiteHook
         public_projects << instance_variable_get(var)
       end
       public_projects
+    end
+    def each(&block)
+      len1 = instance_variables.length
+      x = 0
+      while x < len1
+        base = self
+        yield instance_variable_get(instance_variables[x])
+        x += 1
+      end
+    end
+    def self.length
+      instance_variables.length
     end
   end
   class LogLevels
@@ -280,8 +328,6 @@ module SiteHook
         @configured_commands = {}
         config.each do |command, values|
           @configured_commands.store(command, values)
-          puts command
-          puts values
         end
       end
 
@@ -299,18 +345,30 @@ module SiteHook
     end
     class Server
       def initialize(config)
-        @kconfigured_commands = {}
+        @configured_commands = {}
         config.each do |command, values|
-          @configured_commands[command] = Command.new(name, options)
+          @configured_commands.store(command, values)
         end
+      end
+      def listen
+        Command.new(:listen, @configured_commands[:listen])
+      end
+      def inspect
+        outputs = []
+        @configured_commands.each do |m, body|
+          outputs << "#{m}=#{body}"
+        end
+        "#<SiteHook::Cli::Server #{outputs.join(' ')}>"
       end
     end
     class Command
       attr_reader :name
 
       def initialize(name, options)
+        @name = name
         options.each do |option, value|
-          self.class.define_method(option) do
+          self.class.define_method(option.to_sym) do
+            return value
 
           end
         end
