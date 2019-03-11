@@ -1,6 +1,7 @@
 require 'thor'
-require 'scorched'
-require 'site_hook/webhook'
+require 'grape'
+require 'rack'
+require 'site_hook/api'
 require 'site_hook/config'
 SiteHook::Config.new
 module SiteHook
@@ -15,7 +16,11 @@ module SiteHook
       desc 'listen [options]', ''
       def listen
         $threads << Thread.new do
-          Rack::Handler::Thin.run(SiteHook::Server, {Host: options[:host], Port: options[:port]})
+          Rack::Server.start(
+            app: SiteHook::Server,
+            Host: options[:host],
+            Port: options[:port]
+          )
         end
         $threads << Thread.new do
           loop do

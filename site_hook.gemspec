@@ -34,12 +34,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.add_dependency 'git', '~> 1.3'
   spec.add_dependency 'highline', '~> 2.0.1'
-  spec.add_dependency 'haml', '~> 5.0.4'
-  spec.add_dependency 'scorched', '~> 1.0.0'
+  spec.add_dependency 'grape', '~> 1.2.3'
   spec.add_dependency 'paint', '~> 2.0'
+  spec.add_dependency 'puma'
   spec.add_dependency 'random_password', '~> 0.1.1'
   spec.add_dependency 'recursive-open-struct', '~> 1.1'
-  spec.add_dependency 'thin', '~> 1.7'
   spec.add_dependency 'thor', '~> 0.20.3'
   spec.add_development_dependency 'rspec', '3.8.0'
   spec.add_development_dependency 'aruba', '~> 0.14.8'
@@ -50,8 +49,9 @@ Gem::Specification.new do |spec|
 
 
   spec.post_install_message = <<~POSTINSTALL
-    site_hook 0.9.* introduces breaking configuration changes!
-    .shrc/config -> root:host and root:port directives should now be located in
+    site_hook 0.9.*+ introduces breaking configuration changes!
+
+   1) .shrc/config -> root:host and root:port directives should now be located in
     root:webhook:host and root:webhook:port
 
     Tutorials on site_hook configuration, installation and setup
