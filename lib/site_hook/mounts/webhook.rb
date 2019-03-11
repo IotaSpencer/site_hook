@@ -27,7 +27,7 @@ module SiteHook
             {status: 0, project: params}
           end
         end
-        post '/webhook/:hook_name' do
+        post do
           service = nil
           project = SiteHook::Config.projects.get(params[:hook_name])
           if project == :not_found
