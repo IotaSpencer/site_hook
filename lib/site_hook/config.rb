@@ -1,76 +1,49 @@
 require 'site_hook/paths'
 require 'yaml'
 require 'site_hook/string_ext'
-#require 'site_hook/configs'
 require 'site_hook/prelogger'
 module SiteHook
   class Config
-    def self.defaults
-      RecursiveOpenStruct.new({
-                                  webhook:    {
-                                      host: '127.0.0.1',
-                                      port: 9090
-                                  },
-                                  cli:        {
-                                      config: {
-                                          mkpass: {
-                                              length:  20,
-                                              symbols: 0
-                                          }
-                                      }
-                                  },
-                                  log_levels: {
-                                      app:   'info',
-                                      hook:  'info',
-                                      build: 'info',
-                                      git:   'info'
-                                  },
-                                  projects:   {
-
-                                  }
-                              })
-    end
-
-    def self.validate(config)
-      config.each do |section, hsh|
-        case section.to_s
-        when 'webhook'
-          if hsh['port']
-            port_validity = [
-                hsh['port'].respond_to?(:to_i),
-                hsh['port'].is_a?(Integer)
-            ].drop_while(&:!)
-            SiteHook::PreLogger.debug port_validity
-          else
-            raise InvalidConfigError 'webhook', index
-          end
-          if hsh['host']
-            host_validity = [
-                hsh['host'].respond_to?(:to_s)
-
-            ]
-          end
-          [port_validity]
-        when 'log_levels'
-
-        when 'cli'
-        when 'projects'
-        when 'out'
-          if hsh['out'].keys
-            hsh['out'].keys.each do |key|
-              case key
-              when 'discord'
-              when 'irc'
-              else
-                raise InvalidConfigError 'out', "#{key} is an invalid out service"
-              end
-            end
-          end
-        else
-          raise UnknownFieldError section
-        end
-      end
-    end
+    # def self.validate(config)
+    #   config.each do |section, hsh|
+    #     case section.to_s
+    #     when 'webhook'
+    #       if hsh['port']
+    #         port_validity = [
+    #             hsh['port'].respond_to?(:to_i),
+    #             hsh['port'].is_a?(Integer)
+    #         ].drop_while(&:!)
+    #         SiteHook::PreLogger.debug port_validity
+    #       else
+    #         raise InvalidConfigError 'webhook', index
+    #       end
+    #       if hsh['host']
+    #         host_validity = [
+    #             hsh['host'].respond_to?(:to_s)
+    #
+    #         ]
+    #       end
+    #       [port_validity]
+    #     when 'log_levels'
+    #
+    #     when 'cli'
+    #     when 'projects'
+    #     when 'out'
+    #       if hsh['out'].keys
+    #         hsh['out'].keys.each do |key|
+    #           case key
+    #           when 'discord'
+    #           when 'irc'
+    #           else
+    #             raise InvalidConfigError 'out', "#{key} is an invalid out service"
+    #           end
+    #         end
+    #       end
+    #     else
+    #       raise UnknownFieldError section
+    #     end
+    #   end
+    # end
 
     def inspect
       meths    = %i[webhook log_levels cli projects]
@@ -179,6 +152,7 @@ module SiteHook
       end
 
     end
+
     def get(project)
       if instance_variables.empty?
         return :no_projects
@@ -196,6 +170,7 @@ module SiteHook
         return :not_found
       end
     end
+
     #
     # Collect project names that meet certain criteria
     def collect_public
@@ -208,15 +183,29 @@ module SiteHook
       end
       public_projects
     end
+
+    def to_h
+      projects = {}
+      each do |project|
+        projects[project.name] = {}
+        %i[src dst repo host].each do |option|
+          projects[project.name][option] = project.instance_variable_get(StrExt.mkatvar(option))
+        end
+
+      end
+      projects
+    end
+
     def each(&block)
       len1 = instance_variables.length
-      x = 0
+      x    = 0
       while x < len1
         base = self
         yield instance_variable_get(instance_variables[x])
         x += 1
       end
     end
+
     def self.length
       instance_variables.length
     end
@@ -373,9 +362,11 @@ module SiteHook
           @configured_commands.store(command, values)
         end
       end
+
       def listen
         Command.new(:listen, @configured_commands[:listen])
       end
+
       def inspect
         outputs = []
         @configured_commands.each do |m, body|
