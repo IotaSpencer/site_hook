@@ -1,7 +1,8 @@
 require 'thor'
 require 'grape'
+require 'grape-route-helpers'
+require 'site_hook/webhook'
 require 'rack'
-require 'site_hook/api'
 require 'site_hook/config'
 SiteHook::Config.new
 module SiteHook
@@ -19,7 +20,8 @@ module SiteHook
           Rack::Server.start(
             app: SiteHook::Server,
             Host: options[:host],
-            Port: options[:port]
+            Port: options[:port],
+            debug: true
           )
         end
         $threads << Thread.new do
