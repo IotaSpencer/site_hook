@@ -18,6 +18,18 @@ rescue LoadError
   # Don't worry about empty rescue
 end
 
+require 'rake'
+require 'bundler'
+Bundler.setup
+require 'grape-route-helpers'
+require 'grape-route-helpers/tasks'
+require 'grape-raketasks'
+require 'grape-raketasks/tasks'
+
+desc 'load the Rake environment.'
+task :environment do
+  require File.expand_path('lib/site_hook/env/env.rb', File.dirname(__FILE__))
+end
 
 desc "Run tests and setup"
 tasks = %i[spec cucumber]

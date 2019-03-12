@@ -35,17 +35,19 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'git', '~> 1.3'
   spec.add_dependency 'highline', '~> 2.0.1'
   spec.add_dependency 'grape', '~> 1.2.3'
+  spec.add_dependency 'grape-route-helpers', '~> 2.1'
   spec.add_dependency 'paint', '~> 2.0'
   spec.add_dependency 'puma'
   spec.add_dependency 'random_password', '~> 0.1.1'
   spec.add_dependency 'recursive-open-struct', '~> 1.1'
   spec.add_dependency 'thor', '~> 0.20.3'
+  spec.add_dependency 'grape-raketasks'
   spec.add_development_dependency 'rspec', '3.8.0'
   spec.add_development_dependency 'aruba', '~> 0.14.8'
   spec.add_development_dependency 'bundler', '~> 1.16.1', '< 2.0'
   spec.add_development_dependency 'cucumber', '>= 3.1.2'
   spec.add_development_dependency 'pry', '~> 0.12.2'
-  spec.add_development_dependency 'rake', '~> 10.0'
+
 
 
   spec.post_install_message = <<~POSTINSTALL

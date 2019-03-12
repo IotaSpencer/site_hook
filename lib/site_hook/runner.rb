@@ -18,11 +18,12 @@ module SiteHook
 
       rescue StandardError => e
         b = e.backtrace
-        @stderr.puts("#{b.shift}: #{e.message} (#{e.class})")
-        @stderr.puts(b.map{|s| "\tfrom #{s}"}.join("\n"))
+        STDERR.puts("#{b.shift}: #{e.message} (#{e.class})")
+        STDERR.puts(b.map{|s| "\tfrom #{s}"}.join("\n"))
         1
       rescue SystemExit => e
-        e.status
+        STDERR.puts e.status
+        1
       ensure
 
         $stderr = STDERR
