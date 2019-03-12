@@ -154,8 +154,8 @@ module SiteHook
       end
     end
 
-    resource do
-      get '/webhooks' do
+    resource '/webhooks' do
+      get do
         SiteHook::Config.projects.to_h
       end
 
