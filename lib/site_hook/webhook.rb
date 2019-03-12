@@ -56,10 +56,6 @@ module SiteHook
       SiteHook::Log.access.log "#{status}"
     end
     resource :webhook do
-      post '/' do
-        halt 403
-      end
-
       route_param :hook_name do
         get do
 
