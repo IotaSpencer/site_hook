@@ -55,7 +55,7 @@ module SiteHook
     after do
       SiteHook::Log.access.log "#{status}"
     end
-    resource '/webhook' do
+    resource :webhook do
       route_param :hook_name do
         get do
 
@@ -154,7 +154,7 @@ module SiteHook
       end
     end
 
-    resource '/webhooks' do
+    resource :webhooks do
       get do
         SiteHook::Config.projects.to_h
       end
