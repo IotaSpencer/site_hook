@@ -23,19 +23,21 @@ module SiteHook
       end
 
       def unknown(obj)
-        @@loggers.each do |_key, value|
+        @@loggers.each do |key, value|
+          next if key == :stderr
           value.unknown(obj)
         end
       end
 
       def error(obj)
-        @@loggers.each do |_key, value|
+        @@loggers.each do |key, value|
+          next if key == :stderr
           value.error(obj)
         end
       end
 
       def info(obj)
-        @@loggers.each do |_key, value|
+        @@loggers.each do |key, value|
           next if key == :stderr
           value.info(obj)
         end
@@ -49,7 +51,7 @@ module SiteHook
       end
 
       def warn(obj)
-        @@loggers.each do |_key, value|
+        @@loggers.each do |key, value|
           value.warn(obj)
         end
       end
