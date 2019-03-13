@@ -86,7 +86,7 @@ module SiteHook
         @log = logger
         @options = options
         instance = self::Build.new(options)
-        meths = [instance.do_grab_version, instance.do_pull, instance.do_build]
+        meths = [:do_grab_version, :do_pull, :do_build]
         begin
           meths.each do |m|
             instance.send(m)
