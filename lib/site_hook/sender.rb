@@ -89,9 +89,7 @@ module SiteHook
         meths = [instance.do_grab_version, instance.do_pull, instance.do_build]
         begin
           meths.each do |m|
-            @log.debug("Running #{m}")
             instance.send(m)
-            @log.debug("Ran #{m}")
           end
           return {message: 'success', status: 0}
         rescue TypeError => e
