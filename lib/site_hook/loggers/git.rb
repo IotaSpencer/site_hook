@@ -22,35 +22,41 @@ module SiteHook
         end
       end
 
-      def self.unknown(obj)
+      def unknown(obj)
         @@loggers.each do |_key, value|
           value.unknown(obj)
         end
       end
 
-      def self.error(obj)
+      def error(obj)
         @@loggers.each do |_key, value|
           value.error(obj)
         end
       end
 
-      def self.info(obj)
+      def info(obj)
         @@loggers.each do |_key, value|
           next if key == :stderr
           value.info(obj)
         end
       end
 
-      def self.fatal(obj)
+      def fatal(obj)
         @@loggers.each do |key, value|
           next if key == :stderr
           value.fatal(obj)
         end
       end
 
-      def self.warn(obj)
+      def warn(obj)
         @@loggers.each do |_key, value|
           value.warn(obj)
+        end
+      end
+      def debug(obj)
+        @@loggers.each do |key, value|
+          next if key == :stderr
+          value.debug(obj)
         end
       end
 

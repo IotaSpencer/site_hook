@@ -45,6 +45,11 @@ module SiteHook
       end
     end
 
+    helpers do
+      def halt(status, message, headers)
+        error!(status, message, headers)
+      end
+    end
     APPLICATION_JSON = 'application/json'
     before do
       remote_addr      = request.env['REMOTE_ADDR']
