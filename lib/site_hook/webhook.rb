@@ -137,10 +137,10 @@ module SiteHook
             SiteHook::Log.build.info 'Building...'
             begin
               jekyll_status = SiteHook::Senders::Jekyll.build(project.src, project.dst, SiteHook::Log.build, options: {config: project.config})
-              case jekyll_status
+              case jekyll_status[:status]
 
               when 0
-                {'status': 'success'}.to_json
+                {status: 'success'}
               when -1, -2, -3
                 halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}, {'Content-Type' => 'application/json'}
               else
