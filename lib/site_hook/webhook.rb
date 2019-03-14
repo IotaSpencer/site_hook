@@ -47,7 +47,7 @@ module SiteHook
 
     helpers do
       def halt(status, message, headers)
-        error!(status, message, headers)
+        error!(message, status, headers)
       end
     end
     APPLICATION_JSON = 'application/json'
@@ -80,10 +80,11 @@ module SiteHook
           request.body.rewind
           req_body = request.body.read
           project  = SiteHook::Config.projects.get(StrExt.mkvar(params[:hook_name]))
+          CONTENT_TYPE   = 'Content-Type'
           if project == :not_found
-            halt 404, {message: 'no such project', status: 1}.to_json, {'Content-Type' => 'application/json'}
+            halt 404, {message: 'no such project', status: 1}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
           elsif project == :no_projects
-            halt 500, {message: 'no projects defined', status: 2}.to_json, {'Content-Type' => 'application/json'}
+            halt 500, {message: 'no projects defined', status: 2}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
           end
           plaintext = false
           signature = nil
@@ -111,13 +112,13 @@ module SiteHook
             event   = 'push'
             service = events.select { |_key, value| value }.keys.first
           when false
-            halt 400, {message: 'events are mutually exclusive', status: 'failure'}.to_json, {'Content-Type' => 'application/json'}
+            halt 400, {message: 'events are mutually exclusive', status: 'failure'}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
 
           else
-            halt 400, {'status': 'failure', 'message': 'something weird happened'}, {'Content-Type' => 'application/json'}
+            halt 400, {'status': 'failure', 'message': 'something weird happened'}, {CONTENT_TYPE => APPLICATION_JSON}
           end
           if event != 'push' && event.nil?
-            halt 400, {message: 'no event header', status: 'failure'}.to_json, {'Content-Type' => 'application/json'}
+            halt 400, {message: 'no event header', status: 'failure'}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
           end
           case service
           when 'gitlab'
@@ -142,15 +143,15 @@ module SiteHook
               when 0
                 {status: 'success'}
               when -1, -2, -3
-                halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}, {'Content-Type' => 'application/json'}
+                halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}, {CONTENT_TYPE => APPLICATION_JSON}
               else
                 # This shouldn't happen
               end
             rescue => e
-              halt 500, {'status': 'exception', error: e.to_s}.to_json, {'Content-Type' => 'application/json'}
+              halt 500, {'status': 'exception', error: e.to_s}, {CONTENT_TYPE => APPLICATION_JSON}
             end
           else
-            halt 403, {message: 'incorrect secret', 'status': 'failure'}.to_json, {'Content-Type' => 'application/json'}
+            halt 403, {message: 'incorrect secret', 'status': 'failure'}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
           end
         end
       end
