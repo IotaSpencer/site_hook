@@ -141,6 +141,7 @@ module SiteHook
               case jekyll_status[:status]
 
               when 0
+                status 200
                 {status: 'success'}
               when -1, -2, -3
                 halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}, {CONTENT_TYPE => APPLICATION_JSON}
