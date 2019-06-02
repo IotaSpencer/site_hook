@@ -63,14 +63,14 @@ module SiteHook
     resource :webhook do
       route_param :hook_name do
         get do
-
+          STDOUT.puts params[:hook_name]
           project = SiteHook::Config.projects.find_project(StrExt.mkvar(params[:hook_name]))
           if project.nil?
             {message: 'project not found or private', status: 1, project: {}}
           else
             project_obj = {}
             %i[src dst repo host].each do |option|
-              project_obj[option] = project.instance_variable_get(StrExt.mkatvar(option))
+              project_obj[option] = project.instance_variable_get(StrExt.mkvar(option))
             end
             {project: project_obj}
           end
