@@ -160,7 +160,10 @@ module SiteHook
 
     resource :webhooks do
       get do
-        SiteHook::Config.projects.to_h
+        SiteHook::Config.projects.to_h.reject do |_hook, options|
+          options.fetch(:private)
+        end
+
       end
 
     end
