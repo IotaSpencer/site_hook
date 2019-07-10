@@ -188,7 +188,7 @@ module SiteHook
       projects = {}
       each do |project|
         projects[project.name] = {}
-        %i[src dst repo host].each do |option|
+        %i[src dst repo host private].each do |option|
           projects[project.name][option] = project.instance_variable_get(StrExt.mkatvar(option))
         end
 
