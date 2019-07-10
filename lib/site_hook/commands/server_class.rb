@@ -2,7 +2,7 @@ require 'thor'
 require 'grape'
 require 'grape-route-helpers'
 require 'site_hook/webhook'
-require 'rack'
+require 'thin'
 require 'site_hook/config'
 SiteHook::Config.new
 module SiteHook
@@ -17,12 +17,7 @@ module SiteHook
       desc 'listen [options]', ''
       def listen
         $threads << Thread.new do
-          Rack::Server.start(
-            app: SiteHook::Server,
-            Host: options[:host],
-            Port: options[:port],
-            debug: true
-          )
+          ::Thin::Server.start(options[:host], options[:port], SiteHook::Server, debug: true)
         end
         $threads << Thread.new do
           loop do
