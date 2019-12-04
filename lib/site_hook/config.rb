@@ -75,10 +75,12 @@ module SiteHook
       begin
         @@config = YAML.load_file(@@filename)
       rescue Errno::ENOENT
-        raise NoConfigError path
+        raise NoConfigError @@filename
       rescue NoMethodError
         @@filename.empty?
       end
+    rescue NoConfigError
+      SiteHook::Commands::ConfigClass.invoke(:gen)
     end
 
     # @return [Webhook]
