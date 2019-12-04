@@ -40,7 +40,7 @@ module SiteHook
           if new_exists
             path = self.config
           else
-            raise SiteHook::NeitherConfigError.new path
+            raise SiteHook::NeitherConfigError.new 
           end
         end
       rescue SiteHook::NeitherConfigError
