@@ -44,7 +44,9 @@ module SiteHook
           end
         end
       rescue SiteHook::NeitherConfigError
-        path = self.config
+        if self.dir.exist?
+          path = self.config
+        end
       end
       path
     end

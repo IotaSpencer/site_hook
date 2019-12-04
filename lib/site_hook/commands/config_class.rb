@@ -17,7 +17,7 @@ module SiteHook
           if options[:output] == true
             puts SiteHook::ConfigSections.all_samples
           else 
-            File.open(SiteHook::Paths.config, 'w') do |file|
+            File.open(SiteHook::Paths.config, 'w+') do |file|
               file.puts SiteHook::ConfigSections.all_samples
             end
           end
