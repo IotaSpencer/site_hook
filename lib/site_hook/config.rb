@@ -4,6 +4,7 @@ require 'site_hook/string_ext'
 require 'site_hook/prelogger'
 module SiteHook
   class Config
+    @@config = {}
     # def self.validate(config)
     #   config.each do |section, hsh|
     #     case section.to_s
