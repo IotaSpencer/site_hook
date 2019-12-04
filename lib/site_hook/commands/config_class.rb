@@ -10,11 +10,17 @@ module SiteHook
       # end
       # map ['-v', '--version'] => __version
 
-      desc 'gen [options]', 'generate a sample config'
-
+      desc 'gen [-o]', 'generate a sample config, -o will output to STDOUT instead of to the default config location'
+      method_option(:output, type: :boolean, aliases: ['-o'], default: false)
       def gen
-        if SiteHook::Paths.default_config.exist?
-          puts SiteHook::ConfigSections.all_samples
+        unless SiteHook::Paths.default_config.exist?
+          if options[:output] == true
+            puts SiteHook::ConfigSections.all_samples
+          else 
+            File.open(SiteHook::Paths.config, 'w') do |file|
+              file.puts SiteHook::ConfigSections.all_samples
+            end
+          end
         end
 
       end
