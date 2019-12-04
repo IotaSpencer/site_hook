@@ -11,15 +11,19 @@ module SiteHook
       # map ['-v', '--version'] => __version
 
       desc 'gen [-o]', 'generate a sample config, -o will output to STDOUT instead of to the default config location'
-      method_option(:output, type: :boolean, aliases: ['-o'], default: false)
+      method_option(:output, type: :boolean, default: false, aliases: '-o')
       def gen
         unless SiteHook::Paths.default_config.exist?
           if options[:output] == true
-            puts SiteHook::ConfigSections.all_samples
+            say SiteHook::ConfigSections.all_samples
           else 
             File.open(SiteHook::Paths.config, 'w+') do |file|
               file.puts SiteHook::ConfigSections.all_samples
             end
+          end
+        else
+          if options[:output] == true
+            say SiteHook::ConfigSections.all_samples
           end
         end
 

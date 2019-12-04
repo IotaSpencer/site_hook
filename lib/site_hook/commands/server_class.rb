@@ -14,8 +14,8 @@ module SiteHook
       # puts SiteHook::VERSION
       # end
       # map ['-v', '--version'] => __version
-      method_option(:host, banner: 'HOST', aliases: ['-h'], type: :string, default: SiteHook::Config.new.webhook.host)
-      method_option(:port, banner: 'PORT', aliases: ['-p'], type: :numeric, default: SiteHook::Config.new.webhook.port)
+      method_option(:host, banner: 'HOST', aliases: ['-h'], type: :string, default: SiteHook::Config.new.class.webhook.host)
+      method_option(:port, banner: 'PORT', aliases: ['-p'], type: :numeric, default: SiteHook::Config.new.class.webhook.port)
       desc 'listen [options]', ''
       def listen
         $threads << Thread.new do
