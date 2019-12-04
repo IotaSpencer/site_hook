@@ -8,17 +8,14 @@ require 'super_callbacks'
 module SiteHook
   module Commands
     class ServerClass < Thor
-      include SuperCallbacks
-      before :listen do
-        SiteHook::Config.new
-      end
+
 
       # def __version
       # puts SiteHook::VERSION
       # end
       # map ['-v', '--version'] => __version
-      method_option(:host, banner: 'HOST', aliases: ['-h'], type: :string, default: SiteHook::Config.webhook.host)
-      method_option(:port, banner: 'PORT', aliases: ['-p'], type: :numeric, default: SiteHook::Config.webhook.port)
+      method_option(:host, banner: 'HOST', aliases: ['-h'], type: :string, default: SiteHook::Config.new.webhook.host)
+      method_option(:port, banner: 'PORT', aliases: ['-p'], type: :numeric, default: SiteHook::Config.new.webhook.port)
       desc 'listen [options]', ''
       def listen
         $threads << Thread.new do
