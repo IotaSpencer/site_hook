@@ -81,6 +81,8 @@ module SiteHook
       end
     rescue NoConfigError
       SiteHook::Commands::ConfigClass.invoke(:gen)
+    rescue NeitherConfigError
+      SiteHook::Commands::ConfigClass.invoke(:gen)
     end
 
     # @return [Webhook]
