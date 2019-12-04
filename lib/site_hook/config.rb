@@ -75,7 +75,7 @@ module SiteHook
       begin
         @@config = YAML.load_file(@@filename)
       rescue Errno::ENOENT
-        raise NoConfigError @@filename
+        raise SiteHook::NoConfigError.new @@filename
       rescue NoMethodError
         @@filename.empty?
       end
