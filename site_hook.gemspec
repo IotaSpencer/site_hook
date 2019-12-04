@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'paint', '~> 2.0'
   spec.add_dependency 'random_password', '~> 0.1.1'
   spec.add_dependency 'recursive-open-struct', '~> 1.1'
+  spec.add_dependency 'super_callbacks', '~> 1.3.1'
   spec.add_dependency 'thor', '~> 0.20.3'
   spec.add_dependency 'grape-raketasks'
   spec.add_dependency 'thin'
