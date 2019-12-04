@@ -4,10 +4,15 @@ require 'grape-route-helpers'
 require 'site_hook/webhook'
 require 'thin'
 require 'site_hook/config'
-SiteHook::Config.new
+require 'super_callbacks'
 module SiteHook
   module Commands
     class ServerClass < Thor
+      include SuperCallbacks
+      before :listen do
+        SiteHook::Config.new
+      end
+
       # def __version
       # puts SiteHook::VERSION
       # end
