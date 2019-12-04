@@ -33,27 +33,35 @@ module SiteHook
     end
     def self.default_config(old_exists = self.old_config.exist?, new_exists = self.config.exist?)
       path = ''
-      if old_exists
-        path = self.old_config
-      else
-        if new_exists
-          path = self.config
+      begin 
+        if old_exists
+          path = self.old_config
         else
-          raise NoConfigError path
+          if new_exists
+            path = self.config
+          else
+            raise SiteHook::NeitherConfigError.new path
+          end
         end
+      rescue SiteHook::NeitherConfigError
+        path = self.config
       end
       path
     end
     def self.default_logs(old_exists = self.old_logs.exist?, new_exists = self.logs.exist?)
       path = ''
-      if old_exists
-        path = self.old_logs
-      else
-        if new_exists
-          path = self.logs
+      begin 
+        if old_exists
+          path = self.old_logs
         else
-          raise NoLogsError path
+          if new_exists
+            path = self.logs
+          else
+            raise SiteHook::NoLogsError.new path
+          end
         end
+      rescue SiteHook::NoLogsError
+        path = self.logs
       end
       path
     end
@@ -79,7 +87,7 @@ module SiteHook
           self.logs.join("#{klass.to_s.safe_log_name}#{level}.log")
         else
           path ||= SiteHook::Paths.logs
-          raise SiteHook::NoLogsError path
+          raise SiteHook::NoLogsError.new path
         end
 
       end
