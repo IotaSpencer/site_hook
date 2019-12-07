@@ -35,17 +35,13 @@ module SiteHook
       path = ''
       begin 
         if old_exists
-          path = self.old_config
+          SiteHook::Deprecation.deprecate_config('')
         else
           if new_exists
             path = self.config
           else
-            raise SiteHook::NeitherConfigError.new 
+            raise SiteHook::NoConfigError.new self.config
           end
-        end
-      rescue SiteHook::NeitherConfigError
-        if self.dir.exist?
-          path = self.config
         end
       end
       path
@@ -82,8 +78,12 @@ module SiteHook
       end
       case old_exists
       when true
-        path = self.old_logs
-        self.old_logs.join("#{klass.to_s.safe_log_name}#{level}.log")
+        SiteHook::Deprecation.deprecate(
+          '',
+          "The '.jph/**' directory and contents are now deprecated, and will start erroring and exiting.",
+          "Please use 'site_hook config upgrade-shrc' to upgrade your config to the newer '.shrc/**' folder style.",
+          false
+        )
       when false
         if new_exists
           self.logs.join("#{klass.to_s.safe_log_name}#{level}.log")

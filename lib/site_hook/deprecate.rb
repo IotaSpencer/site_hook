@@ -1,7 +1,9 @@
 require 'paint/util'
 module SiteHook
 
+  # @returns SiteHook::DeprecationError
   class DeprecationError < SiteHookError
+    # @params [String] msg message to return
     def initialize(msg)
       super(msg, 99)
     end
@@ -9,7 +11,7 @@ module SiteHook
   class Deprecation
 
     def self.deprecate(command, situation, instructions, continue)
-      @@exe_name = command.topmost_ancestor.parent.exe_name
+      @@exe_name = command 
       @@str = "▼▼▼ [#{Paint['DEPRECATION ERROR', 'red', :bold]}] —— #{Paint['The following situation is deprecated', 'yellow', :bold, :blink]}! ▼▼▼"
       @@situation = situation
       @@str << "\n#{@@situation}"

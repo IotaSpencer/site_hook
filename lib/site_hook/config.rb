@@ -75,16 +75,17 @@ module SiteHook
       begin
         @@config = YAML.load_file(@@filename)
       rescue Errno::ENOENT
+        PreLogger.error 'ENOENT'
         raise SiteHook::NoConfigError.new @@filename
       rescue NoMethodError
-        @@filename.empty?
+        PreLogger.error @@filename.empty?
       end
     rescue NoConfigError
       #SiteHook::Commands::ConfigClass.invoke()
-      say SiteHook::Commands::ConfigClass.methods
+      PreLogger.error SiteHook::Commands::ConfigClass.methods
     rescue NeitherConfigError
       #SiteHook::Commands::ConfigClass.invoke(:gen)
-      say SiteHook::Commands::ConfigClass.methods
+      PreLogger.error SiteHook::Commands::ConfigClass.methods
     end
 
     # @return [Webhook]
@@ -116,11 +117,11 @@ module SiteHook
     end
 
     def host
-      @host
+      @host || '0.0.0.0'
     end
 
     def port
-      @port
+      @port || 9090
     end
 
     def inspect
