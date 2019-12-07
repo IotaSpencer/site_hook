@@ -9,6 +9,9 @@
 require 'site_hook/paths'
 module SiteHook
   class PreLogger
+    @@loggers = {}
+    @@levels = {}
+    
     def initialize(input, output, errput)
       self.class.set_base_default
       @@levels  = {
