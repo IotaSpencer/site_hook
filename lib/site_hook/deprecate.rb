@@ -24,8 +24,8 @@ module SiteHook
       return self.deprecate(
           command,
           "'#{Paint[SiteHook::Paths.old_config.to_s, 'red']}' is deprecated in favor of '#{Paint[SiteHook::Paths.config, 'green']}'",
-          <<~INSTRUCT,
-              Please run `#{Paint["#{command.topmost_ancestor.parent.exe_name} config upgrade-shrc", 'red', :blink]}` to rectify this.
+          <<-INSTRUCT,
+              Please run `site_hook config upgrade-shrc", 'red', :blink]}` to rectify this.
               Once version 1.0.0 is released, '#{Paint["#{SiteHook::Paths.config}", 'green']}' will
               be the only config file option, and '#{Paint["#{SiteHook::Paths.old_config}", 'orange']}' will not be allowed.
               any existance of '#{Paint["#{Dir.home}/.jph", 'red']}' after the #{Paint['1.0.0', :bold]} release will result in an Exception being raised.
@@ -43,7 +43,7 @@ module SiteHook
 
     def initialize(command)
       @command_object = command
-      @exe_name = @command_object.topmost_ancestor.parent.exe_name
+      @exe_name = 'site_hook'
       @output_string = "Command `#{@exe_name} #{command.name_for_help.join(' ')}"
     end
     def self.declare(command)

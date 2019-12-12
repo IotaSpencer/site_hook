@@ -1,7 +1,8 @@
-require 'site_hook/paths'
-require 'yaml'
-require 'site_hook/string_ext'
-require 'site_hook/prelogger'
+require "site_hook/paths"
+require "yaml"
+require "site_hook/string_ext"
+require "site_hook/prelogger"
+
 module SiteHook
   class Config
     @@config = {}
@@ -47,14 +48,14 @@ module SiteHook
     # end
 
     def inspect
-      meths    = %i[webhook log_levels cli projects]
+      meths = %i[webhook log_levels cli projects]
       sections = {}
       meths.each do |m|
         sections[m] = self.class.send(m).inspect
       end
       secs = []
       sections.each { |name, instance| secs << "#{name}=#{instance}" }
-      "#<SiteHook::Config #{secs.join(' ')}>"
+      "#<SiteHook::Config #{secs.join(" ")}>"
     end
 
     def self.reload!
@@ -70,54 +71,54 @@ module SiteHook
     end
 
     def initialize
-      @@config   = {}
+      @@config = {}
       @@filename = SiteHook::Paths.default_config
       begin
         @@config = YAML.load_file(@@filename)
       rescue Errno::ENOENT
-        PreLogger.error 'ENOENT'
+        PreLogger.error "ENOENT"
         raise SiteHook::NoConfigError.new @@filename
       rescue NoMethodError
         PreLogger.error @@filename.empty?
       end
-    rescue NoConfigError
-      #SiteHook::Commands::ConfigClass.invoke()
-      PreLogger.error SiteHook::Commands::ConfigClass.methods
-    rescue NeitherConfigError
-      #SiteHook::Commands::ConfigClass.invoke(:gen)
-      PreLogger.error SiteHook::Commands::ConfigClass.methods
     end
 
     # @return [Webhook]
     def self.webhook
-      Webhook.new(@@config['webhook'])
+      Webhook.new(@@config["webhook"])
     end
 
     # @return [Projects]
     def self.projects
-      Projects.new(@@config['projects'])
+      Projects.new(@@config["projects"])
     end
 
     # @return [Cli]
     def self.cli
-      Cli.new(@@config['cli'])
+      Cli.new(@@config["cli"])
     end
 
     # @return [LogLevels]
     def self.log_levels
-      LogLevels.new(@@config['log_levels'])
+      LogLevels.new(@@config["log_levels"])
     end
   end
+
   class Webhook
     def initialize(config)
       config.each do |option, value|
         sec = StrExt.mkatvar(option)
         self.instance_variable_set(:"#{sec}", value)
+        sec2 = StrExt.mkatatvar(option)
+        self.class_variable_set(:"#{sec2}", value)
       end
     end
 
+    def self.host
+    end
+
     def host
-      @host || '0.0.0.0'
+      @host || "0.0.0.0"
     end
 
     def port
@@ -127,8 +128,8 @@ module SiteHook
     def inspect
       "#<SiteHook::Webhook host=#{host} port=#{port}>"
     end
-
   end
+
   class Projects
     def initialize(config)
       config.each do |project, options|
@@ -137,12 +138,11 @@ module SiteHook
     end
 
     def inspect
-
       output = []
       instance_variables.each do |project|
         output << "#{StrExt.rematvar(project)}=#{instance_variable_get(project).inspect}"
       end
-      "#<SiteHook::Projects #{output.join(' ')}"
+      "#<SiteHook::Projects #{output.join(" ")}"
     end
 
     def find_project(name)
@@ -158,7 +158,6 @@ module SiteHook
       rescue NameError
         nil
       end
-
     end
 
     def get(project)
@@ -182,7 +181,7 @@ module SiteHook
     #
     # Collect project names that meet certain criteria
     def collect_public
-      public_vars     = instance_variables.reject do |project_var|
+      public_vars = instance_variables.reject do |project_var|
         instance_variable_get(project_var).private
       end
       public_projects = []
@@ -199,14 +198,13 @@ module SiteHook
         %i[src dst repo host private].each do |option|
           projects[project.name][option] = project.instance_variable_get(StrExt.mkatvar(option))
         end
-
       end
       projects
     end
 
     def each(&block)
       len1 = instance_variables.length
-      x    = 0
+      x = 0
       while x < len1
         base = self
         yield instance_variable_get(instance_variables[x])
@@ -218,11 +216,11 @@ module SiteHook
       instance_variables.length
     end
   end
+
   class LogLevels
     attr :app, :hook, :build, :git
 
     def initialize(config)
-
       LogLevels.defaults.each do |type, level|
         if config.fetch(type.to_s, nil)
           level(type.to_s, config.fetch(type.to_s))
@@ -234,7 +232,7 @@ module SiteHook
 
     def to_h
       output_hash = {}
-      wanted      = %i[app hook build git]
+      wanted = %i[app hook build git]
       wanted.each do |logger|
         output_hash.store(logger, instance_variable_get(StrExt.mkatvar(logger)))
       end
@@ -246,7 +244,7 @@ module SiteHook
       instance_variables.each do |var|
         levels << "#{StrExt.rematvar(var)}=#{self.instance_variable_get(var)}"
       end
-      "#<SiteHook::LogLevels #{levels.join(' ')}>"
+      "#<SiteHook::LogLevels #{levels.join(" ")}>"
     end
 
     def fetch(key)
@@ -255,10 +253,10 @@ module SiteHook
 
     def self.defaults
       {
-          app:   'info',
-          hook:  'info',
-          build: 'info',
-          git:   'info',
+        app: "info",
+        hook: "info",
+        build: "info",
+        git: "info",
       }
     end
 
@@ -266,18 +264,19 @@ module SiteHook
       instance_variable_set(:"@#{type}", level)
     end
   end
+
   class Cli
     SECTIONS = {
-        config: {
-            mkpass: [:length, :symbols]
-        },
-        server: {
-            # no host or port since those are set via Webhook
-            # webhook:
-            #   host: 127.0.0.1
-            #   port: 9090
-            #
-            # TODO: Find options to put here
+      config: {
+        mkpass: [:length, :symbols],
+      },
+      server: {
+ # no host or port since those are set via Webhook
+               # webhook:
+               #   host: 127.0.0.1
+               #   port: 9090
+               #
+               # TODO: Find options to put here
         },
     }
 
@@ -297,12 +296,12 @@ module SiteHook
     end
 
     def inspect
-      wanted  = instance_variables
+      wanted = instance_variables
       outputs = []
       wanted.each do |meth|
         outputs << "#{StrExt.rematvar(meth)}=#{instance_variable_get(meth)}"
       end
-      "#<SiteHook::Cli #{outputs.join(' ')}>"
+      "#<SiteHook::Cli #{outputs.join(" ")}>"
     end
   end
 
@@ -324,12 +323,12 @@ module SiteHook
         if instance_variable_get(StrExt.mkatvar(:config))
           # variable exists in configuration
         else
-          instance_variable_set(StrExt.mkatvar(:config), '_config.yml')
+          instance_variable_set(StrExt.mkatvar(:config), "_config.yml")
         end
-        if config.fetch('private', nil)
+        if config.fetch("private", nil)
           instance_variable_set(StrExt.mkatvar(option), value) unless instance_variables.include?(:@private)
         else
-          instance_variable_set(StrExt.mkatvar('private'), false)
+          instance_variable_set(StrExt.mkatvar("private"), false)
         end
       end
     end
@@ -339,9 +338,10 @@ module SiteHook
       instance_variables.each do |sym|
         outputs << "#{StrExt.rematvar(sym)}=#{instance_variable_get(sym)}"
       end
-      "#<SiteHook::Project #{outputs.join(' ')}>"
+      "#<SiteHook::Project #{outputs.join(" ")}>"
     end
   end
+
   class CliClasses
     class Config
       def initialize(config)
@@ -360,9 +360,10 @@ module SiteHook
         @configured_commands.each do |m, body|
           outputs << "#{m}=#{body}"
         end
-        "#<SiteHook::Cli::Config #{outputs.join(' ')}>"
+        "#<SiteHook::Cli::Config #{outputs.join(" ")}>"
       end
     end
+
     class Server
       def initialize(config)
         @configured_commands = {}
@@ -380,9 +381,10 @@ module SiteHook
         @configured_commands.each do |m, body|
           outputs << "#{m}=#{body}"
         end
-        "#<SiteHook::Cli::Server #{outputs.join(' ')}>"
+        "#<SiteHook::Cli::Server #{outputs.join(" ")}>"
       end
     end
+
     class Command
       attr_reader :name
 
@@ -391,7 +393,6 @@ module SiteHook
         options.each do |option, value|
           self.class.define_method(option.to_sym) do
             return value
-
           end
         end
       end
@@ -400,6 +401,7 @@ module SiteHook
         # Bleh
       end
     end
+
     class CommandOption
       def initialize(option, value)
       end
