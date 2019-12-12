@@ -6,7 +6,7 @@ module SiteHook
       sections.each do |section|
         @@sample << self.const_get(section).sample
       end
-      puts @@sample
+      @@sample
     end
     class Webhook
       def self.sample
