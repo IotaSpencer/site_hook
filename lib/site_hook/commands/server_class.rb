@@ -8,7 +8,7 @@ require 'super_callbacks'
 module SiteHook
   module Commands
     class ServerClass < Thor
-
+      SiteHook::Config.config
 
       # def __version
       # puts SiteHook::VERSION
