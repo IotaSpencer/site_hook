@@ -72,7 +72,7 @@ module SiteHook
 
     def initialize
       @@config = {}
-      @@filename = SiteHook::Paths.default_config
+      @@filename = SiteHook::Paths.config
       begin
         @@config = YAML.load_file(@@filename)
       rescue Errno::ENOENT
