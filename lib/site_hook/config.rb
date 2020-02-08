@@ -75,6 +75,7 @@ module SiteHook
       @@filename = SiteHook::Paths.default_config
       begin
         @@config = YAML.load_file(@@filename)
+        puts @@config
       rescue Errno::ENOENT
         PreLogger.error "ENOENT"
         raise SiteHook::NoConfigError.new @@filename
