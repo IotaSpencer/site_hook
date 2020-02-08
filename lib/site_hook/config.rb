@@ -5,48 +5,7 @@ require "site_hook/prelogger"
 
 module SiteHook
   class Config
-    @@config = {}
-    # def self.validate(config)
-    #   config.each do |section, hsh|
-    #     case section.to_s
-    #     when 'webhook'
-    #       if hsh['port']
-    #         port_validity = [
-    #             hsh['port'].respond_to?(:to_i),
-    #             hsh['port'].is_a?(Integer)
-    #         ].drop_while(&:!)
-    #         SiteHook::PreLogger.debug port_validity
-    #       else
-    #         raise InvalidConfigError 'webhook', index
-    #       end
-    #       if hsh['host']
-    #         host_validity = [
-    #             hsh['host'].respond_to?(:to_s)
-    #
-    #         ]
-    #       end
-    #       [port_validity]
-    #     when 'log_levels'
-    #
-    #     when 'cli'
-    #     when 'projects'
-    #     when 'out'
-    #       if hsh['out'].keys
-    #         hsh['out'].keys.each do |key|
-    #           case key
-    #           when 'discord'
-    #           when 'irc'
-    #           else
-    #             raise InvalidConfigError 'out', "#{key} is an invalid out service"
-    #           end
-    #         end
-    #       end
-    #     else
-    #       raise UnknownFieldError section
-    #     end
-    #   end
-    # end
-
+    
     def inspect
       meths = %i[webhook log_levels cli projects]
       sections = {}
@@ -73,6 +32,7 @@ module SiteHook
     def initialize
       @@config = {}
       @@filename = SiteHook::Paths.default_config
+      puts @@filename
       begin
         @@config = YAML.load_file(@@filename)
         puts @@config
@@ -86,22 +46,22 @@ module SiteHook
 
     # @return [Webhook]
     def self.webhook
-      Webhook.new(@@config[:webhook])
+      Webhook.new(@@config['webhook'])
     end
 
     # @return [Projects]
     def self.projects
-      Projects.new(@@config[:projects])
+      Projects.new(@@config['projects'])
     end
 
     # @return [Cli]
     def self.cli
-      Cli.new(@@config[:cli])
+      Cli.new(@@config['cli'])
     end
 
     # @return [LogLevels]
     def self.log_levels
-      LogLevels.new(@@config[:log_levels])
+      LogLevels.new(@@config['log_levels'])
     end
   end
 
