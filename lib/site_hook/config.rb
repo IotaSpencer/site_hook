@@ -49,9 +49,7 @@ module SiteHook
         PreLogger.error @@filename.empty?
       end
     end
-    SiteHook::Config.singleton_class.before :webhook, :projects, :cli, :log_levels do
 
-    end
     # @return [Webhook]
     def self.webhook
       Webhook.new(@@config['webhook'])
