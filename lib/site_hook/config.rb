@@ -13,9 +13,7 @@ module SiteHook
       @@config = {}
     end
     Config.singleton_class.extend AfterDo
-    self.before :config do |f|
-      @@config = {}
-    end
+    
     def inspect
       meths = %i[webhook log_levels cli projects]
       sections = {}
