@@ -85,6 +85,7 @@ module SiteHook
 
     # @return [Webhook]
     def self.webhook
+      puts @@config
       Webhook.new(@@config[:webhook])
     end
 
