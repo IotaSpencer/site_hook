@@ -4,7 +4,6 @@ require 'grape-route-helpers'
 require 'site_hook/webhook'
 require 'thin'
 require 'site_hook/config'
-require 'super_callbacks'
 module SiteHook
   module Commands
     class ServerClass < Thor
@@ -19,6 +18,7 @@ module SiteHook
       desc 'listen [options]', ''
       def listen
         $threads << Thread.new do
+          PreLogger.debug options
           ::Thin::Server.start(options[:host], options[:port], SiteHook::Server, debug: true)
         end
         $threads << Thread.new do

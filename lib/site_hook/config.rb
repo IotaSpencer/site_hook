@@ -40,10 +40,8 @@ module SiteHook
     def initialize
       @@config = {}
       @@filename = SiteHook::Paths.default_config
-      puts @@filename
       begin
         @@config = YAML.load_file(@@filename)
-        puts @@config
       rescue Errno::ENOENT
         PreLogger.error "ENOENT"
         raise SiteHook::NoConfigError.new @@filename
@@ -51,7 +49,9 @@ module SiteHook
         PreLogger.error @@filename.empty?
       end
     end
+    SiteHook::Config.singleton_class.before :webhook, :projects, :cli, :log_levels do
 
+    end
     # @return [Webhook]
     def self.webhook
       Webhook.new(@@config['webhook'])
