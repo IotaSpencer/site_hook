@@ -6,8 +6,8 @@ require 'after_do'
 module SiteHook
   class Config
     extend AfterDo
-    Config.singleton_class.extend AfterDo
-    Config.singleton_class.before :new, :config do |f|
+    Config.class.extend AfterDo
+    Config.class.before :new, :config do |f|
       @@config = {}
     end
     def inspect
