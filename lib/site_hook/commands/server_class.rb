@@ -19,7 +19,7 @@ module SiteHook
       def listen
         $threads << Thread.new do
           PreLogger.debug options
-          ::Thin::Server.start(options[:host], options[:port], SiteHook::Server, debug: true)
+          ::Thin::Server.start(options['host'], options['port'], SiteHook::Server, debug: true)
         end
         $threads << Thread.new do
           loop do
