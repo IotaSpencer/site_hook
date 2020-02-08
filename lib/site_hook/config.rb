@@ -85,22 +85,22 @@ module SiteHook
 
     # @return [Webhook]
     def self.webhook
-      Webhook.new(@@config["webhook"])
+      Webhook.new(@@config[:webhook])
     end
 
     # @return [Projects]
     def self.projects
-      Projects.new(@@config["projects"])
+      Projects.new(@@config[:projects])
     end
 
     # @return [Cli]
     def self.cli
-      Cli.new(@@config["cli"])
+      Cli.new(@@config[:cli])
     end
 
     # @return [LogLevels]
     def self.log_levels
-      LogLevels.new(@@config["log_levels"])
+      LogLevels.new(@@config[:log_levels])
     end
   end
 
