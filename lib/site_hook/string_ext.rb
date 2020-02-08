@@ -38,20 +38,20 @@ end
 module SiteHook
   module StrExt
     def StrExt.mkvar(inspection)
-      inspection.to_s.tr('.', '_').tr(' ', '_')
+      inspection.dup.to_s.tr('.', '_').tr(' ', '_')
     end
     def StrExt.mkatvar(inspection)
       inspection.dup.to_s.insert(0, '@').to_sym
     end
     def StrExt.mkatatvar(inspection)
-      inspection.to_s.insert(0, '@').insert(0, '@').to_sym
+      inspection.dup.to_s.insert(0, '@').insert(0, '@').to_sym
     end
     def StrExt.rematvar(inspection)
-      inspection.to_s.tr('@', '')
+      inspection.dup.to_s.tr('@', '')
     end
 
     def self.mkmvar(inspection)
-      inspection.to_s.tr('@', '').to_sym
+      inspection.dup.to_s.tr('@', '').to_sym
     end
   end
 end
