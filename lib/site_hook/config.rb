@@ -2,10 +2,13 @@ require "site_hook/paths"
 require "yaml"
 require "site_hook/string_ext"
 require "site_hook/prelogger"
-
+require 'after_do'
 module SiteHook
   class Config
-    
+    extend AfterDo
+    Config.singleton_class.before :new, :config do |f|
+      @@config = {}
+    end
     def inspect
       meths = %i[webhook log_levels cli projects]
       sections = {}

@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
     File.basename(f) if wanted_bins.include?(Pathname.new(f).basename.to_s)
   end
   spec.require_paths = ['lib']
+  spec.add_dependency 'after_do', '~> 0.4.0'
   spec.add_dependency 'git', '~> 1.3'
   spec.add_dependency 'grape-raketasks'
   spec.add_dependency 'grape-route-helpers', '~> 2.1'
