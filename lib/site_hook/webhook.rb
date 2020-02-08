@@ -80,11 +80,10 @@ module SiteHook
           request.body.rewind
           req_body = request.body.read
           project  = SiteHook::Config.projects.get(StrExt.mkvar(params[:hook_name]))
-          CONTENT_TYPE   = 'Content-Type'
           if project == :not_found
-            halt 404, {message: 'no such project', status: 1}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
+            halt 404, {message: 'no such project', status: 1}.to_json, {"CONTENT_TYPE" => APPLICATION_JSON}
           elsif project == :no_projects
-            halt 500, {message: 'no projects defined', status: 2}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
+            halt 500, {message: 'no projects defined', status: 2}.to_json, {"CONTENT_TYPE" => APPLICATION_JSON}
           end
           plaintext = false
           signature = nil
