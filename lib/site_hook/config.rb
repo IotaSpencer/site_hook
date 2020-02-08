@@ -7,9 +7,6 @@ module SiteHook
   class Config
     extend AfterDo
     Config.singleton_class.extend AfterDo
-    before :new, :config do |f|
-      @@config = {}
-    end
     Config.singleton_class.before :new, :config do |f|
       @@config = {}
     end
