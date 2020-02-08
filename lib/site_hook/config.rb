@@ -13,7 +13,7 @@ module SiteHook
       @@config = {}
     end
     Config.singleton_class.extend AfterDo
-    before :config do |f|
+    self.before :config do |f|
       @@config = {}
     end
     def inspect
