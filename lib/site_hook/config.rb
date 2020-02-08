@@ -79,7 +79,7 @@ module SiteHook
         sec = StrExt.mkatvar(option)
         self.instance_variable_set(:"#{sec}", value)
         sec2 = StrExt.mkatatvar(option)
-        self.class_variable_set(:"#{sec2}", value)
+        self.class.class_variable_set(:"#{sec2}", value)
       end
     end
 
