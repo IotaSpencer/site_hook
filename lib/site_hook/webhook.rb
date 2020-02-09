@@ -111,13 +111,13 @@ module SiteHook
             event   = 'push'
             service = events.select { |_key, value| value }.keys.first
           when false
-            halt 400, {message: 'events are mutually exclusive', status: 'failure'}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
+            halt 400, {message: 'events are mutually exclusive', status: 'failure'}.to_json, {"CONTENT_TYPE" => APPLICATION_JSON}
 
           else
-            halt 400, {'status': 'failure', 'message': 'something weird happened'}, {CONTENT_TYPE => APPLICATION_JSON}
+            halt 400, {'status': 'failure', 'message': 'something weird happened'}, {"CONTENT_TYPE" => APPLICATION_JSON}
           end
           if event != 'push' && event.nil?
-            halt 400, {message: 'no event header', status: 'failure'}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
+            halt 400, {message: 'no event header', status: 'failure'}.to_json, {"CONTENT_TYPE" => APPLICATION_JSON}
           end
           case service
           when 'gitlab'
@@ -143,15 +143,15 @@ module SiteHook
                 status 200
                 {status: 'success'}
               when -1, -2, -3
-                halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}, {CONTENT_TYPE => APPLICATION_JSON}
+                halt 400, {'status': 'exception', error: jekyll_status.fetch(:message).to_s}, {"CONTENT_TYPE" => APPLICATION_JSON}
               else
                 # This shouldn't happen
               end
             rescue => e
-              halt 500, {'status': 'exception', error: e.to_s}, {CONTENT_TYPE => APPLICATION_JSON}
+              halt 500, {'status': 'exception', error: e.to_s}, {"CONTENT_TYPE" => APPLICATION_JSON}
             end
           else
-            halt 403, {message: 'incorrect secret', 'status': 'failure'}.to_json, {CONTENT_TYPE => APPLICATION_JSON}
+            halt 403, {message: 'incorrect secret', 'status': 'failure'}.to_json, {"CONTENT_TYPE" => APPLICATION_JSON}
           end
         end
       end
